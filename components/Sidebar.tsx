@@ -47,7 +47,8 @@ const Sidebar: React.FC<SidebarProps> = ({
     '16:9': 16 / 9,
     '9:16': 9 / 16,
     '4:3': 4 / 3,
-    '3:4': 3 / 4
+    '3:4': 3 / 4,
+    'A4': 210 / 297
   };
 
   const handlePixelChange = (dim: 'w' | 'h', val: number) => {
@@ -62,10 +63,10 @@ const Sidebar: React.FC<SidebarProps> = ({
     let minDiff = Infinity;
 
     (Object.keys(ratioValues) as AspectRatio[]).forEach((r) => {
-      const diff = Math.abs(ratioValues[r] - currentRatio);
+      const diff = Math.abs(ratioValues[r as AspectRatio] - currentRatio);
       if (diff < minDiff) {
         minDiff = diff;
-        closest = r;
+        closest = r as AspectRatio;
       }
     });
 
@@ -80,6 +81,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     else if (ratio === '1:1') { setWidthPx(1080); setHeightPx(1080); }
     else if (ratio === '4:3') { setWidthPx(1440); setHeightPx(1080); }
     else if (ratio === '3:4') { setWidthPx(1080); setHeightPx(1440); }
+    else if (ratio === 'A4') { setWidthPx(2480); setHeightPx(3508); } // 300 DPI aprox
   };
 
   return (
@@ -118,7 +120,10 @@ const Sidebar: React.FC<SidebarProps> = ({
                     : 'border-gray-100 bg-gray-50 text-gray-600 hover:border-gray-200'
                 }`}
               >
-                <span className="font-medium text-sm">{option.label}</span>
+                <div className="flex items-center gap-3">
+                  <i className={`fa-solid ${option.icon || 'fa-crop-simple'} w-5 text-center`}></i>
+                  <span className="font-medium text-sm">{option.label}</span>
+                </div>
                 {aspectRatio === option.value && !isManual && (
                   <i className="fa-solid fa-circle-check"></i>
                 )}
@@ -133,7 +138,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               Dimensiones (px)
             </label>
             <span className="text-[10px] bg-[#8A1B61]/10 text-[#8A1B61] px-2 py-0.5 rounded-full font-bold">
-              Ratio: {aspectRatio}
+              {aspectRatio === 'A4' ? 'Interno: 3:4 Composition' : `Ratio: ${aspectRatio}`}
             </span>
           </div>
           <div className="grid grid-cols-2 gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
@@ -160,6 +165,11 @@ const Sidebar: React.FC<SidebarProps> = ({
               />
             </div>
           </div>
+          {aspectRatio === 'A4' && (
+            <p className="text-[9px] text-gray-400 mt-2 italic px-1 text-center">
+              A4: 210x297mm (Ratio ~1.41) pre-ajustado a alta resolución.
+            </p>
+          )}
         </div>
 
         <div>

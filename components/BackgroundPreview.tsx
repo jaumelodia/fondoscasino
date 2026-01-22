@@ -33,13 +33,12 @@ const BackgroundPreview: React.FC<BackgroundPreviewProps> = ({
         </div>
         <h3 className="text-xl font-semibold text-gray-800 mb-2">¿Listo para crear?</h3>
         <p className="text-gray-500 max-w-sm">
-          Selecciona el formato deseado y haz clic en "Generar" para crear un fondo geométrico único.
+          Selecciona el formato deseado y haz clic en "Generar" para crear un fondo geométrico único con definición ultra-nítida.
         </p>
       </div>
     );
   }
 
-  // Calculamos el ratio dinámico basado en los píxeles reales
   const dynamicAspectRatio = width / height;
 
   return (
@@ -60,8 +59,8 @@ const BackgroundPreview: React.FC<BackgroundPreviewProps> = ({
                <div className="absolute inset-0 border-4 border-[#8A1B61]/20 rounded-full"></div>
                <div className="absolute inset-0 border-4 border-t-[#8A1B61] rounded-full animate-spin"></div>
             </div>
-            <p className="text-[#8A1B61] font-bold text-lg">Diseñando tu fondo...</p>
-            <p className="text-[#8A1B61]/60 text-xs mt-2 font-medium">Estamos organizando las formas para ti</p>
+            <p className="text-[#8A1B61] font-bold text-lg">Enfocando diseño...</p>
+            <p className="text-[#8A1B61]/60 text-xs mt-2 font-medium">Calculando bordes de precisión</p>
           </div>
         ) : null}
 
@@ -71,6 +70,10 @@ const BackgroundPreview: React.FC<BackgroundPreviewProps> = ({
               src={imageUrl} 
               alt="Fondo generado" 
               className={`w-full h-full object-contain transition-opacity duration-700 ${isLoading ? 'opacity-30' : 'opacity-100'}`}
+              style={{ 
+                imageRendering: 'crisp-edges',
+                msInterpolationMode: 'nearest-neighbor'
+              }}
             />
             {!isLoading && (
               <div className="absolute top-4 right-4 flex gap-2">
@@ -88,12 +91,10 @@ const BackgroundPreview: React.FC<BackgroundPreviewProps> = ({
       </div>
       
       {imageUrl && !isLoading && (
-        <div className="mt-6 flex flex-col items-center">
-           <p className="text-[10px] text-gray-400 font-bold tracking-[0.2em] uppercase">
-             Resolución: {width}x{height} px
-           </p>
-           <p className="text-[9px] text-gray-300 font-medium tracking-widest uppercase mt-1">
-             IA Generativa Gemini 2.5 Flash Image
+        <div className="mt-8 flex flex-col items-center text-center px-4 max-w-2xl">
+           <p className="text-xs text-gray-500 font-medium leading-relaxed italic">
+             Calidad optimizada para web y carga rápida. Si necesitas mayor resolución para impresión profesional o gran formato, 
+             te recomendamos la herramienta libre y gratuita <a href="https://www.upscayl.org/" target="_blank" rel="noopener noreferrer" className="font-bold text-[#8A1B61] hover:underline decoration-2 underline-offset-4 transition-all">Upscayl</a> para aumentar el detalle sin pérdida.
            </p>
         </div>
       )}

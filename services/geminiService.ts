@@ -9,38 +9,35 @@ export const generateGeometricImage = async (
   dispersion: number,
   centerExclusion: number
 ): Promise<string> => {
-  // Aseguramos que la instancia se cree con la API KEY actual disponible en el entorno
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
   
+  const apiRatio = aspectRatio === 'A4' ? '3:4' : aspectRatio;
+
   let dispersionInstruction = "";
   if (dispersion < 30) {
-    dispersionInstruction = "Composición: Bloque visual macizo y compacto, con formas solapándose agresivamente sin dejar espacios.";
+    dispersionInstruction = "Composición: Bloque visual compacto de alto impacto.";
   } else if (dispersion > 70) {
-    dispersionInstruction = "Composición: Formas muy esparcidas por el lienzo con posiciones totalmente impredecibles.";
+    dispersionInstruction = "Composición: Elementos aislados con máxima claridad espacial.";
   } else {
-    dispersionInstruction = "Composición: Distribución orgánica y asimétrica.";
+    dispersionInstruction = "Composición: Equilibrio asimétrico nítido.";
   }
 
   let exclusionInstruction = "";
-  if (centerExclusion === 0) {
-    exclusionInstruction = "Ubicación: Libertad total, las formas pueden cubrir el centro del lienzo.";
-  } else if (centerExclusion < 50) {
-    exclusionInstruction = "Ubicación: Desplazamiento irregular hacia fuera del centro, permitiendo solapamientos asimétricos.";
-  } else {
-    exclusionInstruction = "Ubicación: El centro exacto debe estar vacío. Coloca las figuras solo en los márgenes y esquinas.";
+  if (centerExclusion > 50) {
+    exclusionInstruction = "Ubicación: Centro despejado con enfoque absoluto en los bordes del lienzo.";
   }
 
   const colorList = Object.values(PALETTE).join(", ");
 
-  const prompt = `GENERACIÓN DE ARTE GEOMÉTRICO (REGLAS ESTRICTAS):
-  - NO BORDES: Prohibido dibujar contornos, líneas negras o bordes alrededor de las figuras. Las formas son solo áreas de color sólido.
-  - NO TEXTO: Prohibido incluir letras, números, símbolos o códigos. No incluyas identificadores como "F8A7248" ni medidas.
-  - FORMAS: Solo 4-6 figuras masivas (círculos, rectángulos, triángulos) con rellenos planos.
-  - COLORES: Fondo ${backgroundColor}. Figuras usando exclusivamente: ${colorList}.
-  - ESTILO: Minimalismo vectorial nítido. Sin sombras, sin degradados, sin bordes.
-  - PARÁMETROS: ${exclusionInstruction} | ${dispersionInstruction}
+  const prompt = `TAREA: RENDERIZAR GEOMETRÍA DE ALTA DEFINICIÓN.
+  - ESTILO: Vectorial puro, minimalismo de bordes afilados (razor-sharp edges).
+  - REGLA DE ORO: Máximo enfoque. Las formas deben ser nítidas y limpias, sin rastro de desenfoque o borrosidad.
+  - DETALLE: Solo 4-6 figuras geométricas masivas con bordes de precisión matemática.
+  - COLOR: Fondo ${backgroundColor}. Figuras en colores planos: ${colorList}.
+  - CALIDAD: Definición cristalina, contraste extremo entre formas.
+  ${exclusionInstruction} ${dispersionInstruction}
   
-  IMPORTANTE: No etiquetes nada. No escribas nada. No dibujes líneas de contorno. Solo geometría de color sólido.`;
+  ADVERTENCIA: Si la imagen contiene una sola letra, número o línea de contorno, el resultado es inválido. Entrega solo la geometría pura.`;
 
   try {
     const response = await ai.models.generateContent({
@@ -50,7 +47,7 @@ export const generateGeometricImage = async (
       },
       config: {
         imageConfig: {
-          aspectRatio: aspectRatio,
+          aspectRatio: apiRatio as any,
         },
       },
     });
