@@ -179,11 +179,11 @@ const App: React.FC = () => {
                     key={img.id}
                     onClick={() => selectFromHistory(img)}
                     className={`relative shrink-0 rounded-xl overflow-hidden h-20 w-20 border-2 transition-all hover:scale-105 group shadow-sm ${
-                      currentImage === img.url ? 'border-[#8A1B61] ring-2 ring-[#8A1B61]/20' : 'border-white hover:border-gray-300'
+                      currentImage === img.url ? 'border-[#8E2464] ring-2 ring-[#8E2464]/20' : 'border-white hover:border-gray-300'
                     }`}
                   >
                     <img src={img.url} alt="Historial" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-[#8A1B61]/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <div className="absolute inset-0 bg-[#8E2464]/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                        <i className="fa-solid fa-eye text-white text-xs"></i>
                     </div>
                   </button>

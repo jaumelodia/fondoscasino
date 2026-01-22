@@ -56,11 +56,11 @@ const BackgroundPreview: React.FC<BackgroundPreviewProps> = ({
         {isLoading ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50/90 backdrop-blur-sm z-10 p-6 text-center">
             <div className="relative w-16 h-16 mb-4">
-               <div className="absolute inset-0 border-4 border-[#8A1B61]/20 rounded-full"></div>
-               <div className="absolute inset-0 border-4 border-t-[#8A1B61] rounded-full animate-spin"></div>
+               <div className="absolute inset-0 border-4 border-[#8E2464]/20 rounded-full"></div>
+               <div className="absolute inset-0 border-4 border-t-[#8E2464] rounded-full animate-spin"></div>
             </div>
-            <p className="text-[#8A1B61] font-bold text-lg">Enfocando diseño...</p>
-            <p className="text-[#8A1B61]/60 text-xs mt-2 font-medium">Calculando bordes de precisión</p>
+            <p className="text-[#8E2464] font-bold text-lg">Enfocando diseño...</p>
+            <p className="text-[#8E2464]/60 text-xs mt-2 font-medium">Calculando bordes de precisión</p>
           </div>
         ) : null}
 
@@ -94,7 +94,7 @@ const BackgroundPreview: React.FC<BackgroundPreviewProps> = ({
         <div className="mt-8 flex flex-col items-center text-center px-4 max-w-2xl">
            <p className="text-xs text-gray-500 font-medium leading-relaxed italic">
              Calidad optimizada para web y carga rápida. Si necesitas mayor resolución para impresión profesional o gran formato, 
-             te recomendamos la herramienta libre y gratuita <a href="https://www.upscayl.org/" target="_blank" rel="noopener noreferrer" className="font-bold text-[#8A1B61] hover:underline decoration-2 underline-offset-4 transition-all">Upscayl</a> para aumentar el detalle sin pérdida.
+             te recomendamos la herramienta libre y gratuita <a href="https://www.upscayl.org/" target="_blank" rel="noopener noreferrer" className="font-bold text-[#8E2464] hover:underline decoration-2 underline-offset-4 transition-all">Upscayl</a> para aumentar el detalle sin pérdida.
            </p>
         </div>
       )}

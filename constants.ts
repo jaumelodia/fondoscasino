@@ -1,13 +1,12 @@
 
 export const PALETTE = {
-  crema: '#F9F7DD',
-  moradoIntenso: '#8A1B61',
-  amarilloMostaza: '#F4C82E',
-  naranjaCalido: '#E37239',
-  moradoMedio: '#9C77B3',
-  rosa: '#F09AE4',
-  magentaIntenso: '#B24A87',
-  verdeMenta: '#9ED1BC',
+  oro: '#F2B035',
+  crema: '#F1F3D5',
+  magenta: '#8E2464',
+  naranja: '#D97941',
+  lavanda: '#9C8CC4',
+  rosa: '#B66D97',
+  menta: '#B1D7C3',
 };
 
 export const ASPECT_RATIO_OPTIONS: { label: string; value: any; icon?: string }[] = [
@@ -26,5 +25,6 @@ REGLAS CRÍTICAS DE ENFOQUE Y DEFINICIÓN:
 2. COLORES PLANOS ABSOLUTOS: Cada figura debe ser un bloque de color 100% sólido y uniforme. Prohibido cualquier ruido, textura o degradado sutil que pueda difuminar la imagen.
 3. PROHIBICIÓN DE BORDES Y CONTORNOS: No dibujes líneas de trazo. La definición viene del contraste puro entre planos de color.
 4. LIMPIEZA TOTAL: Prohibido cualquier carácter, letra, número, mancha o artefacto visual. Solo geometría pura y cristalina.
+5. PALETA RESTRINGIDA: Utiliza única y exclusivamente los colores proporcionados en la instrucción.
 
 La estética debe ser la de un archivo vectorial profesional exportado con máxima nitidez.`;

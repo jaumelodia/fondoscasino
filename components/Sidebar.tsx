@@ -88,10 +88,10 @@ const Sidebar: React.FC<SidebarProps> = ({
     <div className="w-full lg:w-80 bg-white border-r border-gray-200 h-screen flex flex-col p-6 shadow-sm overflow-hidden">
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-[#8A1B61] flex items-center justify-center text-white">
+          <div className="w-10 h-10 rounded-lg bg-[#8E2464] flex items-center justify-center text-white">
             <i className="fa-solid fa-music text-xl"></i>
           </div>
-          <h1 className="text-xl font-bold text-gray-800">Casino Musical</h1>
+          <h1 className="text-xl font-bold text-gray-800 leading-tight">Casino<br/>Musical</h1>
         </div>
         <button 
           onClick={onOpenKeySelector}
@@ -116,7 +116,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 onClick={() => handleStandardRatioSelect(option.value)}
                 className={`flex items-center justify-between p-3 rounded-xl border-2 transition-all duration-200 ${
                   aspectRatio === option.value && !isManual
-                    ? 'border-[#8A1B61] bg-[#8A1B61]/5 text-[#8A1B61]'
+                    ? 'border-[#8E2464] bg-[#8E2464]/5 text-[#8E2464]'
                     : 'border-gray-100 bg-gray-50 text-gray-600 hover:border-gray-200'
                 }`}
               >
@@ -137,7 +137,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <label className="block text-sm font-semibold text-gray-700 uppercase tracking-wider">
               Dimensiones (px)
             </label>
-            <span className="text-[10px] bg-[#8A1B61]/10 text-[#8A1B61] px-2 py-0.5 rounded-full font-bold">
+            <span className="text-[10px] bg-[#8E2464]/10 text-[#8E2464] px-2 py-0.5 rounded-full font-bold">
               {aspectRatio === 'A4' ? 'Interno: 3:4 Composition' : `Ratio: ${aspectRatio}`}
             </span>
           </div>
@@ -148,7 +148,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 type="number" 
                 value={widthPx}
                 onChange={(e) => { setIsManual(true); handlePixelChange('w', parseInt(e.target.value) || 0); }}
-                className="w-full bg-white border border-gray-300 rounded-lg p-2 text-sm text-gray-900 focus:ring-2 focus:ring-[#8A1B61]/20 focus:border-[#8A1B61] outline-none transition-all"
+                className="w-full bg-white border border-gray-300 rounded-lg p-2 text-sm text-gray-900 focus:ring-2 focus:ring-[#8E2464]/20 focus:border-[#8E2464] outline-none transition-all"
                 min="64"
                 max="4096"
               />
@@ -159,17 +159,12 @@ const Sidebar: React.FC<SidebarProps> = ({
                 type="number" 
                 value={heightPx}
                 onChange={(e) => { setIsManual(true); handlePixelChange('h', parseInt(e.target.value) || 0); }}
-                className="w-full bg-white border border-gray-300 rounded-lg p-2 text-sm text-gray-900 focus:ring-2 focus:ring-[#8A1B61]/20 focus:border-[#8A1B61] outline-none transition-all"
+                className="w-full bg-white border border-gray-300 rounded-lg p-2 text-sm text-gray-900 focus:ring-2 focus:ring-[#8E2464]/20 focus:border-[#8E2464] outline-none transition-all"
                 min="64"
                 max="4096"
               />
             </div>
           </div>
-          {aspectRatio === 'A4' && (
-            <p className="text-[9px] text-gray-400 mt-2 italic px-1 text-center">
-              A4: 210x297mm (Ratio ~1.41) pre-ajustado a alta resolución.
-            </p>
-          )}
         </div>
 
         <div>
@@ -177,7 +172,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <label className="block text-sm font-semibold text-gray-700 uppercase tracking-wider">
               Dispersión
             </label>
-            <span className="text-xs font-bold text-[#8A1B61]">{dispersion}%</span>
+            <span className="text-xs font-bold text-[#8E2464]">{dispersion}%</span>
           </div>
           <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
             <input 
@@ -186,7 +181,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               max="100" 
               value={dispersion}
               onChange={(e) => setDispersion(parseInt(e.target.value))}
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#8A1B61]"
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#8E2464]"
             />
           </div>
         </div>
@@ -196,7 +191,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <label className="block text-sm font-semibold text-gray-700 uppercase tracking-wider">
               Vacío Central
             </label>
-            <span className="text-xs font-bold text-[#8A1B61]">{centerExclusion}%</span>
+            <span className="text-xs font-bold text-[#8E2464]">{centerExclusion}%</span>
           </div>
           <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
             <input 
@@ -205,7 +200,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               max="100" 
               value={centerExclusion}
               onChange={(e) => setCenterExclusion(parseInt(e.target.value))}
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#8A1B61]"
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#8E2464]"
             />
           </div>
         </div>
@@ -221,7 +216,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 onClick={() => setSelectedBgColor(hex)}
                 className={`w-9 h-9 rounded-full border-2 transition-all duration-300 relative ${
                   selectedBgColor === hex 
-                    ? 'border-[#8A1B61] scale-110 shadow-md' 
+                    ? 'border-[#8E2464] scale-110 shadow-md' 
                     : 'border-white hover:scale-105 shadow-sm'
                 }`}
                 style={{ backgroundColor: hex }}
@@ -229,7 +224,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               >
                 {selectedBgColor === hex && (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <i className={`fa-solid fa-check text-[10px] ${['#F9F7DD', '#F4C82E', '#F09AE4', '#9ED1BC'].includes(hex) ? 'text-gray-800' : 'text-white'}`}></i>
+                    <i className={`fa-solid fa-check text-[10px] ${['#F1F3D5', '#F2B035', '#B1D7C3'].includes(hex) ? 'text-gray-800' : 'text-white'}`}></i>
                   </div>
                 )}
               </button>
@@ -245,7 +240,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           className={`w-full py-4 px-6 rounded-2xl font-bold text-white shadow-lg transition-all duration-300 flex items-center justify-center gap-2 ${
             isLoading 
               ? 'bg-gray-400 cursor-not-allowed' 
-              : 'bg-gradient-to-r from-[#8A1B61] to-[#B24A87] hover:shadow-[#8A1B61]/20 hover:-translate-y-0.5 active:translate-y-0'
+              : 'bg-gradient-to-r from-[#8E2464] to-[#D97941] hover:shadow-[#8E2464]/20 hover:-translate-y-0.5 active:translate-y-0'
           }`}
         >
           {isLoading ? (
