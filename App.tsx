@@ -1,10 +1,10 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
-import Sidebar from './components/Sidebar';
-import BackgroundPreview from './components/BackgroundPreview';
-import { AspectRatio, GeneratedImage } from './types';
-import { generateGeometricImage } from './services/geminiService';
-import { PALETTE } from './constants';
+import Sidebar from './components/Sidebar.tsx';
+import BackgroundPreview from './components/BackgroundPreview.tsx';
+import { AspectRatio, GeneratedImage } from './types.ts';
+import { generateGeometricImage } from './services/geminiService.ts';
+import { PALETTE } from './constants.ts';
 
 const App: React.FC = () => {
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>('16:9');
@@ -21,19 +21,27 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const checkKey = async () => {
-      if (window.aistudio && window.aistudio.hasSelectedApiKey) {
-        const selected = await window.aistudio.hasSelectedApiKey();
-        setHasKey(selected);
+      try {
+        if (window.aistudio && typeof window.aistudio.hasSelectedApiKey === 'function') {
+          const selected = await window.aistudio.hasSelectedApiKey();
+          setHasKey(selected);
+        }
+      } catch (e) {
+        console.warn("AI Studio key selector not available", e);
       }
     };
     checkKey();
   }, []);
 
   const handleOpenKeySelector = async () => {
-    if (window.aistudio && window.aistudio.openSelectKey) {
-      await window.aistudio.openSelectKey();
-      setHasKey(true);
-      setError(null);
+    try {
+      if (window.aistudio && typeof window.aistudio.openSelectKey === 'function') {
+        await window.aistudio.openSelectKey();
+        setHasKey(true);
+        setError(null);
+      }
+    } catch (e) {
+      console.error("Failed to open key selector", e);
     }
   };
 
@@ -55,13 +63,13 @@ const App: React.FC = () => {
       setHistory(prev => [newImg, ...prev].slice(0, 10));
     } catch (err: any) {
       console.error(err);
-      const errorMessage = err.message || "";
+      const errorMessage = err.message || "Error desconocido";
       const isQuota = errorMessage.includes("quota") || errorMessage.includes("429") || errorMessage.includes("RESOURCE_EXHAUSTED");
       
       setError({
         message: isQuota 
           ? "Se ha agotado la cuota gratuita de la API. Para continuar generando imágenes, por favor selecciona tu propia clave de API de un proyecto con facturación habilitada." 
-          : "Algo salió mal al generar la imagen. Por favor, comprueba tu conexión.",
+          : "Algo salió mal al generar la imagen. Por favor, comprueba tu conexión y configuración.",
         isQuota
       });
     } finally {

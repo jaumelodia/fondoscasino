@@ -1,7 +1,7 @@
 
 import { GoogleGenAI } from "@google/genai";
-import { SYSTEM_INSTRUCTION, PALETTE } from "../constants";
-import { AspectRatio } from "../types";
+import { SYSTEM_INSTRUCTION, PALETTE } from "../constants.ts";
+import { AspectRatio } from "../types.ts";
 
 export const generateGeometricImage = async (
   aspectRatio: AspectRatio, 
@@ -9,7 +9,8 @@ export const generateGeometricImage = async (
   dispersion: number,
   centerExclusion: number
 ): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  // Aseguramos que la instancia se cree con la API KEY actual disponible en el entorno
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
   
   let dispersionInstruction = "";
   if (dispersion < 30) {
