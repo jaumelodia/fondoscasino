@@ -85,7 +85,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
 
   return (
-    <div className="w-full lg:w-80 bg-white border-r border-gray-200 h-screen flex flex-col p-6 shadow-sm overflow-hidden">
+    <div className="w-full lg:w-80 bg-white border-b lg:border-b-0 lg:border-r border-gray-200 h-auto lg:h-screen flex flex-col p-6 shadow-sm shrink-0">
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-[#8E2464] flex items-center justify-center text-white">
@@ -104,12 +104,12 @@ const Sidebar: React.FC<SidebarProps> = ({
         </button>
       </div>
 
-      <div className="space-y-6 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+      <div className="space-y-6 flex-1 lg:overflow-y-auto pr-0 lg:pr-2 custom-scrollbar">
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wider">
             Formato / Ratio
           </label>
-          <div className="grid grid-cols-1 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2">
             {ASPECT_RATIO_OPTIONS.map((option) => (
               <button
                 key={option.value}
@@ -233,7 +233,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </div>
 
-      <div className="mt-6 pt-6 border-t border-gray-100">
+      <div className="mt-6 pt-6 border-t border-gray-100 bg-white lg:bg-transparent sticky lg:relative bottom-0 left-0 right-0">
         <button
           onClick={onGenerate}
           disabled={isLoading}

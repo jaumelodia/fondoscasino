@@ -87,7 +87,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-screen bg-[#FDFCF7] overflow-hidden">
+    <div className="flex flex-col lg:flex-row min-h-screen lg:h-screen bg-[#FDFCF7] overflow-y-auto lg:overflow-hidden">
       <Sidebar 
         aspectRatio={aspectRatio}
         setAspectRatio={setAspectRatio}
@@ -107,16 +107,16 @@ const App: React.FC = () => {
         hasCustomKey={hasKey}
       />
 
-      <main className="flex-1 flex flex-col min-h-0 bg-gray-50/30 relative">
+      <main className="flex-1 flex flex-col bg-gray-50/30 relative">
         {/* Banner destacado de limitación diaria */}
-        <div className="w-full bg-amber-50 border-b border-amber-100 py-2 px-4 text-center shadow-sm z-10">
-          <p className="text-[11px] text-amber-800 font-bold tracking-wide uppercase flex items-center justify-center gap-2">
+        <div className="w-full bg-amber-50 border-b border-amber-100 py-3 px-4 text-center shadow-sm z-10 sticky top-0">
+          <p className="text-[10px] sm:text-[11px] text-amber-800 font-bold tracking-wide uppercase flex items-center justify-center gap-2">
             <i className="fa-solid fa-triangle-exclamation text-amber-600"></i>
-            Las imágenes tienen una limitación diaria. Por favor, evita el exceso de variaciones para mantener el servicio disponible para todos.
+            Limitación diaria activa. Evita el exceso de variaciones.
           </p>
         </div>
 
-        <div className="max-w-6xl mx-auto w-full flex-1 flex flex-col min-h-0 p-4 lg:p-8">
+        <div className="max-w-6xl mx-auto w-full flex-1 flex flex-col p-4 lg:p-8">
           
           {error && (
             <div className={`mb-6 p-4 rounded-2xl border flex flex-col gap-4 shadow-sm animate-in fade-in slide-in-from-top-4 duration-300 ${
@@ -142,20 +142,12 @@ const App: React.FC = () => {
                     <i className="fa-solid fa-plus-circle"></i>
                     Configurar mi propia clave API
                   </button>
-                  <a 
-                    href="https://ai.google.dev/gemini-api/docs/billing" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-amber-700 hover:text-amber-900 text-xs font-semibold underline underline-offset-4"
-                  >
-                    Ver documentación de facturación
-                  </a>
                 </div>
               )}
             </div>
           )}
 
-          <div className="flex-1 flex items-center justify-center min-h-0 overflow-hidden">
+          <div className="flex-1 flex items-center justify-center min-h-[400px] sm:min-h-[500px] lg:min-h-0 py-8 lg:py-0">
             <BackgroundPreview 
               imageUrl={currentImage} 
               isLoading={isLoading}
@@ -166,7 +158,7 @@ const App: React.FC = () => {
           </div>
 
           {history.length > 0 && (
-            <div className="mt-8 shrink-0">
+            <div className="mt-8 shrink-0 pb-10 lg:pb-0">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-xs font-bold text-gray-500 flex items-center gap-2 uppercase tracking-widest">
                   <i className="fa-solid fa-clock-rotate-left"></i>
@@ -178,14 +170,11 @@ const App: React.FC = () => {
                   <button
                     key={img.id}
                     onClick={() => selectFromHistory(img)}
-                    className={`relative shrink-0 rounded-xl overflow-hidden h-20 w-20 border-2 transition-all hover:scale-105 group shadow-sm ${
+                    className={`relative shrink-0 rounded-xl overflow-hidden h-16 w-16 sm:h-20 sm:w-20 border-2 transition-all hover:scale-105 group shadow-sm ${
                       currentImage === img.url ? 'border-[#8E2464] ring-2 ring-[#8E2464]/20' : 'border-white hover:border-gray-300'
                     }`}
                   >
                     <img src={img.url} alt="Historial" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-[#8E2464]/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                       <i className="fa-solid fa-eye text-white text-xs"></i>
-                    </div>
                   </button>
                 ))}
               </div>
