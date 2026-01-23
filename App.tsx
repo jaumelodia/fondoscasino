@@ -10,8 +10,8 @@ const App: React.FC = () => {
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>('16:9');
   const [widthPx, setWidthPx] = useState<number>(1920);
   const [heightPx, setHeightPx] = useState<number>(1080);
-  const [dispersion, setDispersion] = useState<number>(50);
-  const [centerExclusion, setCenterExclusion] = useState<number>(0);
+  const [dispersion, setDispersion] = useState<number>(90);
+  const [centerExclusion, setCenterExclusion] = useState<number>(90);
   const [selectedBgColor, setSelectedBgColor] = useState<string>(PALETTE.crema);
   const [currentImage, setCurrentImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);

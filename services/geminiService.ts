@@ -15,29 +15,30 @@ export const generateGeometricImage = async (
 
   let dispersionInstruction = "";
   if (dispersion < 30) {
-    dispersionInstruction = "Composición: Bloque visual compacto de alto impacto.";
+    dispersionInstruction = "Composición: Figuras masivas superpuestas en el centro.";
   } else if (dispersion > 70) {
-    dispersionInstruction = "Composición: Elementos aislados con máxima claridad espacial.";
+    dispersionInstruction = "Composición: Formas gigantes que se extienden hasta los bordes del lienzo.";
   } else {
-    dispersionInstruction = "Composición: Equilibrio asimétrico nítido.";
+    dispersionInstruction = "Composición: Equilibrio de bloques de gran escala.";
   }
 
   let exclusionInstruction = "";
   if (centerExclusion > 50) {
-    exclusionInstruction = "Ubicación: Centro despejado con enfoque absoluto en los bordes del lienzo.";
+    exclusionInstruction = "Ubicación: Centro vacío, figuras gigantes desplazadas hacia los laterales.";
   }
 
   const colorList = Object.values(PALETTE).join(", ");
 
-  const prompt = `TAREA: RENDERIZAR GEOMETRÍA DE ALTA DEFINICIÓN.
-  - ESTILO: Vectorial puro, minimalismo de bordes afilados (razor-sharp edges).
-  - REGLA DE ORO: Máximo enfoque. Las formas deben ser nítidas y limpias, sin rastro de desenfoque o borrosidad.
-  - DETALLE: Solo 4-6 figuras geométricas masivas con bordes de precisión matemática.
-  - COLOR: Fondo ${backgroundColor}. Figuras en colores planos: ${colorList}.
-  - CALIDAD: Definición cristalina, contraste extremo entre formas.
+  const prompt = `TAREA: GENERAR COMPOSICIÓN GEOMÉTRICA DE BLOQUES MASIVOS.
+  - ESTILO: Abstracción geométrica pura, bordes afilados sin trazo.
+  - REQUISITO CRÍTICO: PROHIBIDO EL USO DE LÍNEAS NEGRAS O CONTORNOS. Las figuras no tienen borde.
+  - FORMAS: Solo 3-5 polígonos o círculos GIGANTES y ALEATORIOS que ocupen gran parte del lienzo.
+  - COLOR: Fondo liso color ${backgroundColor}. Formas en colores sólidos: ${colorList}.
+  - PROHIBICIÓN: Cero texto, cero números, cero símbolos. Solo planos de color.
+  
   ${exclusionInstruction} ${dispersionInstruction}
   
-  ADVERTENCIA: Si la imagen contiene una sola letra, número o línea de contorno, el resultado es inválido. Entrega solo la geometría pura.`;
+  RECUERDA: Si añades un borde negro o un trazo de línea, la imagen será rechazada. Busca la pureza del plano de color.`;
 
   try {
     const response = await ai.models.generateContent({
