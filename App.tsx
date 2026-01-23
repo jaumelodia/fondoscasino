@@ -16,7 +16,7 @@ const App: React.FC = () => {
   const [currentImage, setCurrentImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [history, setHistory] = useState<GeneratedImage[]>([]);
-  const [error, setError] = useState<{message: string, isQuota: boolean} | null>(null);
+  const [error, setError] = useState<{message: string, isQuota: boolean, isNotFound?: boolean} | null>(null);
   const [hasKey, setHasKey] = useState<boolean>(true);
 
   useEffect(() => {
@@ -62,16 +62,28 @@ const App: React.FC = () => {
       
       setHistory(prev => [newImg, ...prev].slice(0, 10));
     } catch (err: any) {
-      console.error(err);
-      const errorMessage = err.message || "Error desconocido";
-      const isQuota = errorMessage.includes("quota") || errorMessage.includes("429") || errorMessage.includes("RESOURCE_EXHAUSTED");
+      console.error("Generation Error Details:", err);
+      const errorMessage = err.message || "";
       
-      setError({
-        message: isQuota 
-          ? "Se ha agotado la cuota gratuita de la API. Para continuar generando imágenes, por favor selecciona tu propia clave de API de un proyecto con facturación habilitada." 
-          : "Algo salió mal al generar la imagen. Por favor, comprueba tu conexión y configuración.",
-        isQuota
-      });
+      const isQuota = errorMessage.includes("quota") || errorMessage.includes("429") || errorMessage.includes("RESOURCE_EXHAUSTED");
+      const isNotFound = errorMessage.includes("Requested entity was not found") || errorMessage.includes("not found");
+
+      if (isNotFound) {
+        // Regla obligatoria: Si no se encuentra el modelo, resetear clave
+        handleOpenKeySelector();
+        setError({
+          message: "El modelo no está disponible con la configuración actual. Por favor, selecciona una clave de API de un proyecto con facturación habilitada (Tier 1 o superior).",
+          isQuota: false,
+          isNotFound: true
+        });
+      } else {
+        setError({
+          message: isQuota 
+            ? "Se ha agotado la cuota gratuita de la API. Para continuar, selecciona tu propia clave de API de pago." 
+            : "Error al generar la imagen. Revisa tu clave de API o intenta de nuevo.",
+          isQuota
+        });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -108,11 +120,10 @@ const App: React.FC = () => {
       />
 
       <main className="flex-1 flex flex-col bg-gray-50/30 relative">
-        {/* Banner destacado de limitación diaria */}
         <div className="w-full bg-amber-50 border-b border-amber-100 py-3 px-4 text-center shadow-sm z-10 sticky top-0">
           <p className="text-[10px] sm:text-[11px] text-amber-800 font-bold tracking-wide uppercase flex items-center justify-center gap-2">
             <i className="fa-solid fa-triangle-exclamation text-amber-600"></i>
-            Limitación diaria activa. Evita el exceso de variaciones.
+            Generador de Fondos Bauhaus - No usar texto ni bordes
           </p>
         </div>
 
@@ -120,28 +131,29 @@ const App: React.FC = () => {
           
           {error && (
             <div className={`mb-6 p-4 rounded-2xl border flex flex-col gap-4 shadow-sm animate-in fade-in slide-in-from-top-4 duration-300 ${
-              error.isQuota ? 'bg-amber-50 border-amber-200 text-amber-900' : 'bg-red-50 border-red-200 text-red-600'
+              error.isQuota || error.isNotFound ? 'bg-amber-50 border-amber-200 text-amber-900' : 'bg-red-50 border-red-200 text-red-600'
             }`}>
               <div className="flex items-start gap-3">
-                <i className={`fa-solid ${error.isQuota ? 'fa-key' : 'fa-triangle-exclamation'} mt-1 text-lg`}></i>
+                <i className={`fa-solid ${error.isQuota || error.isNotFound ? 'fa-key' : 'fa-triangle-exclamation'} mt-1 text-lg`}></i>
                 <div>
                   <p className="font-bold text-sm">
-                    {error.isQuota ? "Cuota de API Agotada" : "Error de Generación"}
+                    {error.isNotFound ? "Modelo No Encontrado / Reconfiguración Necesaria" : error.isQuota ? "Cuota Agotada" : "Error de Conexión"}
                   </p>
                   <p className="text-sm opacity-90 leading-relaxed mt-1">
                     {error.message}
                   </p>
                 </div>
               </div>
-              {error.isQuota && (
+              {(error.isQuota || error.isNotFound) && (
                 <div className="flex items-center gap-3 mt-2">
                   <button 
                     onClick={handleOpenKeySelector}
                     className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-2"
                   >
                     <i className="fa-solid fa-plus-circle"></i>
-                    Configurar mi propia clave API
+                    Configurar clave API (Proyecto de Pago)
                   </button>
+                  <a href="https://ai.google.dev/gemini-api/docs/billing" target="_blank" className="text-[10px] text-amber-700 underline font-medium">Documentación de facturación</a>
                 </div>
               )}
             </div>

@@ -9,59 +9,41 @@ export const generateGeometricImage = async (
   dispersion: number,
   centerExclusion: number
 ): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+  // Inicialización limpia según guidelines
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const apiRatio = aspectRatio === 'A4' ? '3:4' : aspectRatio;
 
-  let dispersionInstruction = "";
-  if (dispersion < 30) {
-    dispersionInstruction = "Composición: Figuras masivas superpuestas en el centro.";
-  } else if (dispersion > 70) {
-    dispersionInstruction = "Composición: Formas gigantes que se extienden hasta los bordes del lienzo.";
-  } else {
-    dispersionInstruction = "Composición: Equilibrio de bloques de gran escala.";
-  }
+  const colorList = Object.values(PALETTE).filter(c => c !== backgroundColor).join(", ");
 
-  let exclusionInstruction = "";
-  if (centerExclusion > 50) {
-    exclusionInstruction = "Ubicación: Centro vacío, figuras gigantes desplazadas hacia los laterales.";
-  }
-
-  const colorList = Object.values(PALETTE).join(", ");
-
-  const prompt = `TAREA: GENERAR COMPOSICIÓN GEOMÉTRICA DE BLOQUES MASIVOS.
-  - ESTILO: Abstracción geométrica pura, bordes afilados sin trazo.
-  - REQUISITO CRÍTICO: PROHIBIDO EL USO DE LÍNEAS NEGRAS O CONTORNOS. Las figuras no tienen borde.
-  - FORMAS: Solo 3-5 polígonos o círculos GIGANTES y ALEATORIOS que ocupen gran parte del lienzo.
-  - COLOR: Fondo liso color ${backgroundColor}. Formas en colores sólidos: ${colorList}.
-  - PROHIBICIÓN: Cero texto, cero números, cero símbolos. Solo planos de color.
+  const prompt = `COMPOSICIÓN DE PLANOS MASIVOS:
+  - FONDO: Un plano sólido de color ${backgroundColor}.
+  - FIGURAS: Superpone 3 bloques geométricos GIGANTES que se corten entre sí.
+  - COLORES DE FIGURAS: Usa exclusivamente estos colores: ${colorList}.
+  - BORDE: Grosor de borde 0. Sin líneas negras. Sin contornos.
+  - LIMPIEZA: Absolutamente nada de texto, números o símbolos.
   
-  ${exclusionInstruction} ${dispersionInstruction}
-  
-  RECUERDA: Si añades un borde negro o un trazo de línea, la imagen será rechazada. Busca la pureza del plano de color.`;
+  Configuración adicional:
+  Dispersion: ${dispersion}% (determina cuánto se alejan los planos del centro).
+  Center Exclusion: ${centerExclusion}% (determina el espacio vacío en el eje central).`;
 
-  try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-image',
-      contents: {
-        parts: [{ text: `${SYSTEM_INSTRUCTION}\n\n${prompt}` }],
+  const response = await ai.models.generateContent({
+    model: 'gemini-2.5-flash-image',
+    contents: {
+      parts: [{ text: `${SYSTEM_INSTRUCTION}\n\n${prompt}` }],
+    },
+    config: {
+      imageConfig: {
+        aspectRatio: apiRatio as any,
       },
-      config: {
-        imageConfig: {
-          aspectRatio: apiRatio as any,
-        },
-      },
-    });
+    },
+  });
 
-    for (const part of response.candidates?.[0]?.content?.parts || []) {
-      if (part.inlineData) {
-        return `data:image/png;base64,${part.inlineData.data}`;
-      }
+  for (const part of response.candidates?.[0]?.content?.parts || []) {
+    if (part.inlineData) {
+      return `data:image/png;base64,${part.inlineData.data}`;
     }
-
-    throw new Error("No image data found in response");
-  } catch (error) {
-    console.error("Gemini Image Generation Error:", error);
-    throw error;
   }
+
+  throw new Error("No image data found in response");
 };
