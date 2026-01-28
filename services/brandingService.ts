@@ -6,8 +6,8 @@
  */
 
 const LOGO_URLS = {
-  white: 'https://raw.githubusercontent.com/jaumelodia/fondoscasino/main/logo-blanco.png',
-  black: 'https://raw.githubusercontent.com/jaumelodia/fondoscasino/main/logo-negro.png'
+  white: 'https://raw.githubusercontent.com/jaumelodia/fondoscasino/faccc4f27e07ba7f272b6e37a3f9827f67adef27/logos/logo-blanco.png',
+  black: 'https://raw.githubusercontent.com/jaumelodia/fondoscasino/faccc4f27e07ba7f272b6e37a3f9827f67adef27/logos/logo-negro.png'
 };
 
 // Caché interna para evitar descargar el logo más de una vez
