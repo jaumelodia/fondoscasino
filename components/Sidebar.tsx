@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { ASPECT_RATIO_OPTIONS, PALETTE } from '../constants';
 import { AspectRatio, LogoChoice } from '../types';
 
@@ -70,12 +70,9 @@ const Sidebar: React.FC<SidebarProps> = ({
             <h1 className="text-xl font-bold text-gray-800 leading-tight mt-[-4px]">Musical</h1>
           </div>
         </div>
-        <div className="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center" title="Motor Procedural Activo">
-          <i className="fa-solid fa-bolt text-xs"></i>
-        </div>
       </div>
 
-      <div className="space-y-6 flex-1 lg:overflow-y-auto pr-0 lg:pr-2 custom-scrollbar">
+      <div className="space-y-6 flex-1 lg:overflow-y-auto pr-0 lg:pr-2 custom-scrollbar text-gray-700">
         <div>
           <label className="block text-[10px] font-bold text-gray-400 mb-3 uppercase tracking-widest">
             Formato / Ratio
@@ -100,7 +97,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
            <label className="block text-[10px] font-bold text-gray-500 mb-3 uppercase tracking-widest">
-            Branding (Auto-Contraste)
+            Superposición de Logo
           </label>
           <div className="grid grid-cols-2 gap-2">
             {(['none', 'auto', 'white', 'black'] as LogoChoice[]).map((choice) => (
@@ -109,13 +106,35 @@ const Sidebar: React.FC<SidebarProps> = ({
                 onClick={() => setLogoChoice(choice)}
                 className={`py-2 px-1 rounded-lg border-2 text-[9px] font-bold uppercase transition-all ${
                   logoChoice === choice 
-                    ? 'border-[#8E2464] bg-[#8E2464] text-white' 
+                    ? 'border-[#8E2464] bg-[#8E2464] text-white shadow-sm' 
                     : 'border-gray-200 bg-white text-gray-400 hover:border-gray-300'
                 }`}
               >
                 {choice === 'none' ? 'Sin Logo' : choice === 'auto' ? 'Auto' : choice === 'white' ? 'Blanco' : 'Negro'}
               </button>
             ))}
+          </div>
+          
+          <div className="mt-4 pt-3 border-t border-gray-200">
+            <span className="text-[8px] text-gray-400 font-bold uppercase block mb-2">Activos de Branding:</span>
+            <div className="flex flex-col gap-1.5">
+              <a 
+                href="https://raw.githubusercontent.com/jaumelodia/fondoscasino/main/logo-blanco.png" 
+                target="_blank" 
+                rel="noreferrer"
+                className="text-[9px] text-indigo-600 hover:text-indigo-800 flex items-center gap-2 font-medium"
+              >
+                <i className="fa-solid fa-cloud-arrow-down"></i> logo-blanco.png
+              </a>
+              <a 
+                href="https://raw.githubusercontent.com/jaumelodia/fondoscasino/main/logo-negro.png" 
+                target="_blank" 
+                rel="noreferrer"
+                className="text-[9px] text-indigo-600 hover:text-indigo-800 flex items-center gap-2 font-medium"
+              >
+                <i className="fa-solid fa-cloud-arrow-down"></i> logo-negro.png
+              </a>
+            </div>
           </div>
         </div>
 
@@ -184,10 +203,15 @@ const Sidebar: React.FC<SidebarProps> = ({
           className={`w-full py-4 px-6 rounded-2xl font-bold text-white shadow-lg transition-all duration-300 flex items-center justify-center gap-2 ${
             isLoading 
               ? 'bg-gray-400 cursor-not-allowed' 
-              : 'bg-gradient-to-r from-[#8E2464] to-[#D97941] hover:shadow-[#8E2464]/20 hover:-translate-y-0.5 active:translate-y-0'
+              : 'bg-gradient-to-r from-[#8E2464] to-[#D97941] hover:shadow-[#8E2464]/20 active:scale-[0.98]'
           }`}
         >
-          {isLoading ? <><i className="fa-solid fa-circle-notch fa-spin"></i><span>Dibujando...</span></> : <><i className="fa-solid fa-wand-magic-sparkles"></i><span>Generar Diseño</span></>}
+          {isLoading ? (
+            <i className="fa-solid fa-circle-notch animate-spin"></i>
+          ) : (
+            <i className="fa-solid fa-wand-magic-sparkles"></i>
+          )}
+          {isLoading ? 'Generando...' : 'Generar Fondo'}
         </button>
       </div>
     </div>

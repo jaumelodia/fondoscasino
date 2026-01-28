@@ -4,7 +4,7 @@ import Sidebar from './components/Sidebar.tsx';
 import BackgroundPreview from './components/BackgroundPreview.tsx';
 import { AspectRatio, GeneratedImage, LogoChoice } from './types.ts';
 import { drawBauhausPattern } from './services/proceduralService.ts';
-import { applyBranding } from './services/brandingService.ts';
+import { applyBranding, preloadLogos } from './services/brandingService.ts';
 import { PALETTE } from './constants.ts';
 
 const App: React.FC = () => {
@@ -15,18 +15,27 @@ const App: React.FC = () => {
   const [dispersion, setDispersion] = useState<number>(50);
   const [centerExclusion, setCenterExclusion] = useState<number>(50);
   const [shapeSize, setShapeSize] = useState<number>(50);
-  const [logoChoice, setLogoChoice] = useState<LogoChoice>('white');
+  const [logoChoice, setLogoChoice] = useState<LogoChoice>('auto');
   const [selectedBgColor, setSelectedBgColor] = useState<string>(PALETTE.crema);
   const [currentImage, setCurrentImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [brandingError, setBrandingError] = useState<string | null>(null);
   const [history, setHistory] = useState<GeneratedImage[]>([]);
+
+  // Pre-cargar logos oficiales al iniciar
+  useEffect(() => {
+    preloadLogos();
+  }, []);
 
   const handleGenerate = useCallback(async () => {
     setIsLoading(true);
-    // Un pequeño delay para que la transición se sienta orgánica
+    setBrandingError(null);
+    
+    // Pequeño timeout para asegurar que el estado de carga se renderiza
     setTimeout(async () => {
       try {
-        let url = drawBauhausPattern(
+        // 1. Generar base procedural (patrón Bauhaus)
+        let patternUrl = drawBauhausPattern(
           widthPx, 
           heightPx, 
           selectedBgColor, 
@@ -36,15 +45,24 @@ const App: React.FC = () => {
           shapeSize
         );
         
+        let finalUrl = patternUrl;
+
+        // 2. Intentar aplicar branding
         if (logoChoice !== 'none') {
-          url = await applyBranding(url, logoChoice as any);
+          try {
+            finalUrl = await applyBranding(patternUrl, logoChoice);
+          } catch (brandErr: any) {
+            // Si el logo falla, mantenemos la imagen sin logo (patternUrl)
+            setBrandingError(brandErr.message);
+            console.warn("Branding omitido por error de carga:", brandErr);
+          }
         }
 
-        setCurrentImage(url);
+        setCurrentImage(finalUrl);
         
         const newImg: GeneratedImage = {
           id: Math.random().toString(36).substring(7),
-          url: url,
+          url: finalUrl,
           timestamp: Date.now(),
           aspectRatio: aspectRatio,
           dimensions: { width: widthPx, height: heightPx }
@@ -52,11 +70,11 @@ const App: React.FC = () => {
         
         setHistory(prev => [newImg, ...prev].slice(0, 10));
       } catch (err) {
-        console.error("Error en motor procedural:", err);
+        console.error("Error crítico en motor de generación:", err);
       } finally {
         setIsLoading(false);
       }
-    }, 150);
+    }, 200);
   }, [aspectRatio, selectedBgColor, widthPx, heightPx, density, dispersion, centerExclusion, shapeSize, logoChoice]);
 
   useEffect(() => {
@@ -91,15 +109,35 @@ const App: React.FC = () => {
       />
 
       <main className="flex-1 flex flex-col bg-gray-50/40 relative overflow-hidden">
-        {/* Banner Superior Actualizado */}
+        {/* Banner Superior de Estado */}
         <div className="w-full bg-[#8E2464] py-1.5 px-4 text-center z-20 shrink-0 shadow-sm">
           <p className="text-[9px] text-white font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-2">
-            <i className="fa-solid fa-bolt text-yellow-400"></i>
-            Procedural Engine v3.3 • Configuración Equilibrada al 50%
+            <i className="fa-solid fa-cloud-arrow-down text-yellow-400"></i>
+            Procedural Engine v3.8 • Activos Remotos Optimizados
           </p>
         </div>
 
-        {/* Área de Previsualización centradísima */}
+        {/* Notificación de Error de Branding */}
+        {brandingError && (
+          <div className="mx-8 mt-4 bg-red-50 border border-red-200 p-4 rounded-xl flex items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-500 z-30 shadow-sm">
+            <div className="bg-red-100 text-red-600 w-10 h-10 rounded-full flex items-center justify-center shrink-0">
+              <i className="fa-solid fa-file-circle-exclamation text-sm"></i>
+            </div>
+            <div className="flex-1">
+              <p className="text-[11px] font-bold text-red-800 uppercase tracking-tight">Incidencia con el Logo</p>
+              <p className="text-[10px] text-red-600 leading-tight">
+                {brandingError} Se ha generado la imagen <b>sin logo</b> para no interrumpir el flujo.
+              </p>
+            </div>
+            <button 
+              onClick={() => setBrandingError(null)} 
+              className="text-red-400 hover:text-red-600 px-3 py-1 transition-colors"
+            >
+              <i className="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        )}
+
         <div className="flex-1 w-full flex flex-col items-center justify-center p-4 lg:p-8 overflow-hidden">
           <BackgroundPreview 
             imageUrl={currentImage} 
@@ -110,11 +148,11 @@ const App: React.FC = () => {
           />
         </div>
 
-        {/* Historial rápido */}
+        {/* Historial de Generaciones */}
         {history.length > 1 && (
           <div className="shrink-0 bg-white/60 backdrop-blur-md border-t border-gray-100 p-4 z-10">
             <div className="max-w-4xl mx-auto flex items-center gap-4">
-              <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest shrink-0">Historial</span>
+              <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest shrink-0">Recientes</span>
               <div className="flex gap-3 overflow-x-auto py-1 custom-scrollbar">
                 {history.map((img) => (
                   <button 
