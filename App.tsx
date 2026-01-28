@@ -12,6 +12,7 @@ const App: React.FC = () => {
   const [heightPx, setHeightPx] = useState<number>(1080);
   const [dispersion, setDispersion] = useState<number>(90);
   const [centerExclusion, setCenterExclusion] = useState<number>(90);
+  const [shapeSize, setShapeSize] = useState<number>(50);
   const [selectedBgColor, setSelectedBgColor] = useState<string>(PALETTE.crema);
   const [currentImage, setCurrentImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -49,7 +50,7 @@ const App: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const url = await generateGeometricImage(aspectRatio, selectedBgColor, dispersion, centerExclusion);
+      const url = await generateGeometricImage(aspectRatio, selectedBgColor, dispersion, centerExclusion, shapeSize);
       setCurrentImage(url);
       
       const newImg: GeneratedImage = {
@@ -87,7 +88,7 @@ const App: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [aspectRatio, selectedBgColor, widthPx, heightPx, dispersion, centerExclusion]);
+  }, [aspectRatio, selectedBgColor, widthPx, heightPx, dispersion, centerExclusion, shapeSize]);
 
   const selectFromHistory = (img: GeneratedImage) => {
     setCurrentImage(img.url);
@@ -113,6 +114,8 @@ const App: React.FC = () => {
         setDispersion={setDispersion}
         centerExclusion={centerExclusion}
         setCenterExclusion={setCenterExclusion}
+        shapeSize={shapeSize}
+        setShapeSize={setShapeSize}
         onGenerate={handleGenerate}
         isLoading={isLoading}
         onOpenKeySelector={handleOpenKeySelector}

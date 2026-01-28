@@ -18,6 +18,8 @@ interface SidebarProps {
   setDispersion: (val: number) => void;
   centerExclusion: number;
   setCenterExclusion: (val: number) => void;
+  shapeSize: number;
+  setShapeSize: (val: number) => void;
   onOpenKeySelector: () => void;
   hasCustomKey: boolean;
 }
@@ -37,6 +39,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   setDispersion,
   centerExclusion,
   setCenterExclusion,
+  shapeSize,
+  setShapeSize,
   onOpenKeySelector,
   hasCustomKey
 }) => {
@@ -200,6 +204,25 @@ const Sidebar: React.FC<SidebarProps> = ({
               max="100" 
               value={centerExclusion}
               onChange={(e) => setCenterExclusion(parseInt(e.target.value))}
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#8E2464]"
+            />
+          </div>
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <label className="block text-sm font-semibold text-gray-700 uppercase tracking-wider">
+              Tamaño de Formas
+            </label>
+            <span className="text-xs font-bold text-[#8E2464]">{shapeSize}%</span>
+          </div>
+          <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
+            <input 
+              type="range" 
+              min="1" 
+              max="100" 
+              value={shapeSize}
+              onChange={(e) => setShapeSize(parseInt(e.target.value))}
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#8E2464]"
             />
           </div>
