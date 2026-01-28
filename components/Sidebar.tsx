@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { ASPECT_RATIO_OPTIONS, PALETTE } from '../constants';
-import { AspectRatio } from '../types';
+import { AspectRatio, LogoChoice } from '../types';
 
 interface SidebarProps {
   aspectRatio: AspectRatio;
@@ -20,6 +20,8 @@ interface SidebarProps {
   setCenterExclusion: (val: number) => void;
   shapeSize: number;
   setShapeSize: (val: number) => void;
+  logoChoice: LogoChoice;
+  setLogoChoice: (choice: LogoChoice) => void;
   onOpenKeySelector: () => void;
   hasCustomKey: boolean;
 }
@@ -41,6 +43,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   setCenterExclusion,
   shapeSize,
   setShapeSize,
+  logoChoice,
+  setLogoChoice,
   onOpenKeySelector,
   hasCustomKey
 }) => {
@@ -85,7 +89,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     else if (ratio === '1:1') { setWidthPx(1080); setHeightPx(1080); }
     else if (ratio === '4:3') { setWidthPx(1440); setHeightPx(1080); }
     else if (ratio === '3:4') { setWidthPx(1080); setHeightPx(1440); }
-    else if (ratio === 'A4') { setWidthPx(2480); setHeightPx(3508); } // 300 DPI aprox
+    else if (ratio === 'A4') { setWidthPx(2480); setHeightPx(3508); } 
   };
 
   return (
@@ -128,103 +132,29 @@ const Sidebar: React.FC<SidebarProps> = ({
                   <i className={`fa-solid ${option.icon || 'fa-crop-simple'} w-5 text-center`}></i>
                   <span className="font-medium text-sm">{option.label}</span>
                 </div>
-                {aspectRatio === option.value && !isManual && (
-                  <i className="fa-solid fa-circle-check"></i>
-                )}
               </button>
             ))}
           </div>
         </div>
 
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <label className="block text-sm font-semibold text-gray-700 uppercase tracking-wider">
-              Dimensiones (px)
-            </label>
-            <span className="text-[10px] bg-[#8E2464]/10 text-[#8E2464] px-2 py-0.5 rounded-full font-bold">
-              {aspectRatio === 'A4' ? 'Interno: 3:4 Composition' : `Ratio: ${aspectRatio}`}
-            </span>
-          </div>
-          <div className="grid grid-cols-2 gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
-            <div className="space-y-1">
-              <span className="text-[10px] text-gray-500 uppercase font-bold pl-1">Ancho</span>
-              <input 
-                type="number" 
-                value={widthPx}
-                onChange={(e) => { setIsManual(true); handlePixelChange('w', parseInt(e.target.value) || 0); }}
-                className="w-full bg-white border border-gray-300 rounded-lg p-2 text-sm text-gray-900 focus:ring-2 focus:ring-[#8E2464]/20 focus:border-[#8E2464] outline-none transition-all"
-                min="64"
-                max="4096"
-              />
-            </div>
-            <div className="space-y-1">
-              <span className="text-[10px] text-gray-500 uppercase font-bold pl-1">Alto</span>
-              <input 
-                type="number" 
-                value={heightPx}
-                onChange={(e) => { setIsManual(true); handlePixelChange('h', parseInt(e.target.value) || 0); }}
-                className="w-full bg-white border border-gray-300 rounded-lg p-2 text-sm text-gray-900 focus:ring-2 focus:ring-[#8E2464]/20 focus:border-[#8E2464] outline-none transition-all"
-                min="64"
-                max="4096"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <label className="block text-sm font-semibold text-gray-700 uppercase tracking-wider">
-              Dispersión
-            </label>
-            <span className="text-xs font-bold text-[#8E2464]">{dispersion}%</span>
-          </div>
-          <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-            <input 
-              type="range" 
-              min="0" 
-              max="100" 
-              value={dispersion}
-              onChange={(e) => setDispersion(parseInt(e.target.value))}
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#8E2464]"
-            />
-          </div>
-        </div>
-
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <label className="block text-sm font-semibold text-gray-700 uppercase tracking-wider">
-              Vacío Central
-            </label>
-            <span className="text-xs font-bold text-[#8E2464]">{centerExclusion}%</span>
-          </div>
-          <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-            <input 
-              type="range" 
-              min="0" 
-              max="100" 
-              value={centerExclusion}
-              onChange={(e) => setCenterExclusion(parseInt(e.target.value))}
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#8E2464]"
-            />
-          </div>
-        </div>
-
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <label className="block text-sm font-semibold text-gray-700 uppercase tracking-wider">
-              Tamaño de Formas
-            </label>
-            <span className="text-xs font-bold text-[#8E2464]">{shapeSize}%</span>
-          </div>
-          <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-            <input 
-              type="range" 
-              min="1" 
-              max="100" 
-              value={shapeSize}
-              onChange={(e) => setShapeSize(parseInt(e.target.value))}
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#8E2464]"
-            />
+        <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+           <label className="block text-[10px] font-bold text-gray-500 mb-3 uppercase tracking-widest">
+            Ajustes de Marca (Branding)
+          </label>
+          <div className="flex gap-2">
+            {(['none', 'white', 'black'] as LogoChoice[]).map((choice) => (
+              <button
+                key={choice}
+                onClick={() => setLogoChoice(choice)}
+                className={`flex-1 py-2 px-1 rounded-lg border-2 text-[10px] font-bold uppercase transition-all ${
+                  logoChoice === choice 
+                    ? 'border-[#8E2464] bg-[#8E2464] text-white' 
+                    : 'border-gray-200 bg-white text-gray-400 hover:border-gray-300'
+                }`}
+              >
+                {choice === 'none' ? 'Sin Logo' : choice === 'white' ? 'Blanco' : 'Negro'}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -243,7 +173,6 @@ const Sidebar: React.FC<SidebarProps> = ({
                     : 'border-white hover:scale-105 shadow-sm'
                 }`}
                 style={{ backgroundColor: hex }}
-                title={name.charAt(0).toUpperCase() + name.slice(1)}
               >
                 {selectedBgColor === hex && (
                   <div className="absolute inset-0 flex items-center justify-center">
@@ -254,9 +183,33 @@ const Sidebar: React.FC<SidebarProps> = ({
             ))}
           </div>
         </div>
+
+        <div className="space-y-4">
+           <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-[11px] font-bold text-gray-600 uppercase">Dispersión</label>
+              <span className="text-[11px] font-bold text-[#8E2464]">{dispersion}%</span>
+            </div>
+            <input type="range" min="0" max="100" value={dispersion} onChange={(e) => setDispersion(parseInt(e.target.value))} className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#8E2464]"/>
+          </div>
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-[11px] font-bold text-gray-600 uppercase">Vacío Central</label>
+              <span className="text-[11px] font-bold text-[#8E2464]">{centerExclusion}%</span>
+            </div>
+            <input type="range" min="0" max="100" value={centerExclusion} onChange={(e) => setCenterExclusion(parseInt(e.target.value))} className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#8E2464]"/>
+          </div>
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-[11px] font-bold text-gray-600 uppercase">Tamaño Formas</label>
+              <span className="text-[11px] font-bold text-[#8E2464]">{shapeSize}%</span>
+            </div>
+            <input type="range" min="1" max="100" value={shapeSize} onChange={(e) => setShapeSize(parseInt(e.target.value))} className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#8E2464]"/>
+          </div>
+        </div>
       </div>
 
-      <div className="mt-6 pt-6 border-t border-gray-100 bg-white lg:bg-transparent sticky lg:relative bottom-0 left-0 right-0">
+      <div className="mt-6 pt-6 border-t border-gray-100">
         <button
           onClick={onGenerate}
           disabled={isLoading}
@@ -266,17 +219,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               : 'bg-gradient-to-r from-[#8E2464] to-[#D97941] hover:shadow-[#8E2464]/20 hover:-translate-y-0.5 active:translate-y-0'
           }`}
         >
-          {isLoading ? (
-            <>
-              <i className="fa-solid fa-circle-notch fa-spin"></i>
-              <span>Generando...</span>
-            </>
-          ) : (
-            <>
-              <i className="fa-solid fa-wand-magic-sparkles"></i>
-              <span>Generar Diseño</span>
-            </>
-          )}
+          {isLoading ? <><i className="fa-solid fa-circle-notch fa-spin"></i><span>Generando...</span></> : <><i className="fa-solid fa-wand-magic-sparkles"></i><span>Generar Diseño</span></>}
         </button>
       </div>
     </div>

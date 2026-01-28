@@ -71,8 +71,8 @@ const BackgroundPreview: React.FC<BackgroundPreviewProps> = ({
               alt="Fondo generado" 
               className={`w-full h-full object-contain transition-opacity duration-700 ${isLoading ? 'opacity-30' : 'opacity-100'}`}
               style={{ 
-                imageRendering: 'crisp-edges',
-                msInterpolationMode: 'nearest-neighbor'
+                // Fix: Removed non-standard msInterpolationMode property causing TS error
+                imageRendering: 'crisp-edges'
               }}
             />
             {!isLoading && (
