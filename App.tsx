@@ -11,8 +11,9 @@ const App: React.FC = () => {
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>('16:9');
   const [widthPx, setWidthPx] = useState<number>(1920);
   const [heightPx, setHeightPx] = useState<number>(1080);
-  const [dispersion, setDispersion] = useState<number>(60);
-  const [centerExclusion, setCenterExclusion] = useState<number>(40);
+  const [density, setDensity] = useState<number>(50); 
+  const [dispersion, setDispersion] = useState<number>(50);
+  const [centerExclusion, setCenterExclusion] = useState<number>(50);
   const [shapeSize, setShapeSize] = useState<number>(50);
   const [logoChoice, setLogoChoice] = useState<LogoChoice>('white');
   const [selectedBgColor, setSelectedBgColor] = useState<string>(PALETTE.crema);
@@ -22,13 +23,19 @@ const App: React.FC = () => {
 
   const handleGenerate = useCallback(async () => {
     setIsLoading(true);
-    // Pequeño timeout para feedback visual de carga instantánea
+    // Un pequeño delay para que la transición se sienta orgánica
     setTimeout(async () => {
       try {
-        // 1. Generación Procedural (Instantánea, sin API)
-        let url = drawBauhausPattern(widthPx, heightPx, selectedBgColor, dispersion, centerExclusion, shapeSize);
+        let url = drawBauhausPattern(
+          widthPx, 
+          heightPx, 
+          selectedBgColor, 
+          density, 
+          dispersion, 
+          centerExclusion, 
+          shapeSize
+        );
         
-        // 2. Aplicar Branding Inteligente (Auto-contraste disponible)
         if (logoChoice !== 'none') {
           url = await applyBranding(url, logoChoice as any);
         }
@@ -49,16 +56,15 @@ const App: React.FC = () => {
       } finally {
         setIsLoading(false);
       }
-    }, 100);
-  }, [aspectRatio, selectedBgColor, widthPx, heightPx, dispersion, centerExclusion, shapeSize, logoChoice]);
+    }, 150);
+  }, [aspectRatio, selectedBgColor, widthPx, heightPx, density, dispersion, centerExclusion, shapeSize, logoChoice]);
 
-  // Generar uno inicial
   useEffect(() => {
     handleGenerate();
   }, []);
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen lg:h-screen bg-[#FDFCF7] overflow-y-auto lg:overflow-hidden">
+    <div className="flex flex-col lg:flex-row h-screen bg-[#FDFCF7] overflow-hidden">
       <Sidebar 
         aspectRatio={aspectRatio}
         setAspectRatio={setAspectRatio}
@@ -68,6 +74,8 @@ const App: React.FC = () => {
         setWidthPx={setWidthPx}
         heightPx={heightPx}
         setHeightPx={setHeightPx}
+        density={density}
+        setDensity={setDensity}
         dispersion={dispersion}
         setDispersion={setDispersion}
         centerExclusion={centerExclusion}
@@ -82,38 +90,45 @@ const App: React.FC = () => {
         hasCustomKey={true}
       />
 
-      <main className="flex-1 flex flex-col bg-gray-50/30 relative">
-        <div className="w-full bg-indigo-600 py-2 px-4 text-center z-10 sticky top-0">
-          <p className="text-[10px] text-white font-bold tracking-widest uppercase flex items-center justify-center gap-2">
-            <i className="fa-solid fa-bolt"></i>
-            Motor Procedural V2: Generación Instantánea & Branding Adaptativo
+      <main className="flex-1 flex flex-col bg-gray-50/40 relative overflow-hidden">
+        {/* Banner Superior Actualizado */}
+        <div className="w-full bg-[#8E2464] py-1.5 px-4 text-center z-20 shrink-0 shadow-sm">
+          <p className="text-[9px] text-white font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-2">
+            <i className="fa-solid fa-bolt text-yellow-400"></i>
+            Procedural Engine v3.3 • Configuración Equilibrada al 50%
           </p>
         </div>
 
-        <div className="max-w-6xl mx-auto w-full flex-1 flex flex-col p-4 lg:p-8">
-          <div className="flex-1 flex items-center justify-center min-h-[400px]">
-            <BackgroundPreview 
-              imageUrl={currentImage} 
-              isLoading={isLoading}
-              aspectRatio={aspectRatio}
-              width={widthPx}
-              height={heightPx}
-            />
-          </div>
+        {/* Área de Previsualización centradísima */}
+        <div className="flex-1 w-full flex flex-col items-center justify-center p-4 lg:p-8 overflow-hidden">
+          <BackgroundPreview 
+            imageUrl={currentImage} 
+            isLoading={isLoading}
+            aspectRatio={aspectRatio}
+            width={widthPx}
+            height={heightPx}
+          />
+        </div>
 
-          {history.length > 0 && (
-            <div className="mt-8 shrink-0 pb-10 lg:pb-0 overflow-hidden">
-              <h3 className="text-xs font-bold text-gray-500 mb-3 uppercase tracking-widest">Variaciones</h3>
-              <div className="flex gap-3 overflow-x-auto pb-4 px-1">
+        {/* Historial rápido */}
+        {history.length > 1 && (
+          <div className="shrink-0 bg-white/60 backdrop-blur-md border-t border-gray-100 p-4 z-10">
+            <div className="max-w-4xl mx-auto flex items-center gap-4">
+              <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest shrink-0">Historial</span>
+              <div className="flex gap-3 overflow-x-auto py-1 custom-scrollbar">
                 {history.map((img) => (
-                  <button key={img.id} onClick={() => setCurrentImage(img.url)} className={`relative shrink-0 rounded-xl overflow-hidden h-16 w-16 border-2 transition-all ${currentImage === img.url ? 'border-indigo-600 scale-105' : 'border-white'}`}>
+                  <button 
+                    key={img.id} 
+                    onClick={() => setCurrentImage(img.url)} 
+                    className={`relative shrink-0 rounded-lg overflow-hidden h-12 w-12 border-2 transition-all hover:scale-105 active:scale-95 ${currentImage === img.url ? 'border-[#8E2464] shadow-md ring-2 ring-[#8E2464]/20' : 'border-white'}`}
+                  >
                     <img src={img.url} className="w-full h-full object-cover" />
                   </button>
                 ))}
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </main>
     </div>
   );

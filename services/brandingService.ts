@@ -10,7 +10,7 @@ export const applyBranding = async (
   return new Promise((resolve, reject) => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    if (!ctx) return reject();
+    if (!ctx) return reject(new Error("Canvas context failed"));
 
     const bgImg = new Image();
     bgImg.crossOrigin = "anonymous";
@@ -19,36 +19,56 @@ export const applyBranding = async (
       canvas.height = bgImg.height;
       ctx.drawImage(bgImg, 0, 0);
 
-      // --- DETECCIÓN DE BRILLO PARA LOGO AUTO ---
+      // --- CÁLCULO DE ÁREA DE MARCA ---
       const padding = canvas.width * 0.05;
       const logoTargetWidth = canvas.width * 0.15;
       
       let finalLogoType = logoChoice;
+
+      // Si es AUTO, analizamos la esquina superior izquierda
       if (logoChoice === 'auto') {
-        // Analizar una pequeña muestra de píxeles en el área del logo
-        const imageData = ctx.getImageData(padding, padding, 50, 50).data;
-        let brightnessSum = 0;
-        for (let i = 0; i < imageData.length; i += 4) {
-          // Fórmula de luminancia: 0.299R + 0.587G + 0.114B
-          brightnessSum += (0.299 * imageData[i] + 0.587 * imageData[i+1] + 0.114 * imageData[i+2]);
+        try {
+          // Analizar área donde irá el logo (aprox 15% del ancho)
+          const analysisSize = Math.floor(logoTargetWidth);
+          const imageData = ctx.getImageData(padding, padding, analysisSize, analysisSize).data;
+          let brightnessSum = 0;
+          for (let i = 0; i < imageData.length; i += 4) {
+            // Luminancia ITU-R BT.709
+            const r = imageData[i];
+            const g = imageData[i+1];
+            const b = imageData[i+2];
+            brightnessSum += (0.2126 * r + 0.7152 * g + 0.0722 * b);
+          }
+          const avgBrightness = brightnessSum / (imageData.length / 4);
+          finalLogoType = avgBrightness > 140 ? 'black' : 'white';
+        } catch (e) {
+          console.error("Brightness detection error:", e);
+          finalLogoType = 'white'; // Fallback
         }
-        const avgBrightness = brightnessSum / (imageData.length / 4);
-        finalLogoType = avgBrightness > 128 ? 'black' : 'white';
       }
 
       const logoImg = new Image();
       logoImg.crossOrigin = "anonymous";
+      
+      // Eventos antes del src
       logoImg.onload = () => {
         const aspectRatio = logoImg.naturalHeight / logoImg.naturalWidth;
         const logoTargetHeight = logoTargetWidth * aspectRatio;
         
+        ctx.globalAlpha = 1.0;
         ctx.drawImage(logoImg, padding, padding, logoTargetWidth, logoTargetHeight);
         resolve(canvas.toDataURL('image/png', 1.0));
       };
       
-      logoImg.onerror = () => resolve(backgroundImageUrl);
+      logoImg.onerror = () => {
+        console.warn("Logo not found, returning base image");
+        resolve(backgroundImageUrl);
+      };
+
       logoImg.src = finalLogoType === 'white' ? './logo-blanco.png' : './logo-negro.png';
     };
+    
+    bgImg.onerror = () => reject(new Error("BG Load error"));
     bgImg.src = backgroundImageUrl;
   });
 };

@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { ASPECT_RATIO_OPTIONS, PALETTE } from '../constants';
 import { AspectRatio, LogoChoice } from '../types';
 
@@ -14,6 +14,8 @@ interface SidebarProps {
   setWidthPx: (w: number) => void;
   heightPx: number;
   setHeightPx: (h: number) => void;
+  density: number;
+  setDensity: (val: number) => void;
   dispersion: number;
   setDispersion: (val: number) => void;
   centerExclusion: number;
@@ -33,10 +35,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   isLoading,
   selectedBgColor,
   setSelectedBgColor,
-  widthPx,
-  setWidthPx,
-  heightPx,
-  setHeightPx,
+  density,
+  setDensity,
   dispersion,
   setDispersion,
   centerExclusion,
@@ -45,45 +45,11 @@ const Sidebar: React.FC<SidebarProps> = ({
   setShapeSize,
   logoChoice,
   setLogoChoice,
-  onOpenKeySelector,
-  hasCustomKey
+  setWidthPx,
+  setHeightPx
 }) => {
-  const [isManual, setIsManual] = useState(false);
-
-  const ratioValues: Record<AspectRatio, number> = {
-    '1:1': 1,
-    '16:9': 16 / 9,
-    '9:16': 9 / 16,
-    '4:3': 4 / 3,
-    '3:4': 3 / 4,
-    'A4': 210 / 297
-  };
-
-  const handlePixelChange = (dim: 'w' | 'h', val: number) => {
-    const newW = dim === 'w' ? val : widthPx;
-    const newH = dim === 'h' ? val : heightPx;
-    
-    if (dim === 'w') setWidthPx(val);
-    else setHeightPx(val);
-
-    const currentRatio = newW / newH;
-    let closest: AspectRatio = '1:1';
-    let minDiff = Infinity;
-
-    (Object.keys(ratioValues) as AspectRatio[]).forEach((r) => {
-      const diff = Math.abs(ratioValues[r as AspectRatio] - currentRatio);
-      if (diff < minDiff) {
-        minDiff = diff;
-        closest = r as AspectRatio;
-      }
-    });
-
-    setAspectRatio(closest);
-  };
-
   const handleStandardRatioSelect = (ratio: AspectRatio) => {
     setAspectRatio(ratio);
-    setIsManual(false);
     if (ratio === '16:9') { setWidthPx(1920); setHeightPx(1080); }
     else if (ratio === '9:16') { setWidthPx(1080); setHeightPx(1920); }
     else if (ratio === '1:1') { setWidthPx(1080); setHeightPx(1080); }
@@ -99,39 +65,34 @@ const Sidebar: React.FC<SidebarProps> = ({
           <div className="w-10 h-10 rounded-lg bg-[#8E2464] flex items-center justify-center text-white">
             <i className="fa-solid fa-music text-xl"></i>
           </div>
-          <h1 className="text-xl font-bold text-gray-800 leading-tight">Casino<br/>Musical</h1>
+          <div className="flex flex-col">
+            <h1 className="text-xl font-bold text-gray-800 leading-tight">Casino</h1>
+            <h1 className="text-xl font-bold text-gray-800 leading-tight mt-[-4px]">Musical</h1>
+          </div>
         </div>
-        <button 
-          onClick={onOpenKeySelector}
-          title={hasCustomKey ? "Clave API configurada" : "Configurar Clave API"}
-          className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
-            hasCustomKey ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600 animate-pulse'
-          }`}
-        >
-          <i className={`fa-solid ${hasCustomKey ? 'fa-key' : 'fa-circle-exclamation'}`}></i>
-        </button>
+        <div className="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center" title="Motor Procedural Activo">
+          <i className="fa-solid fa-bolt text-xs"></i>
+        </div>
       </div>
 
       <div className="space-y-6 flex-1 lg:overflow-y-auto pr-0 lg:pr-2 custom-scrollbar">
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wider">
+          <label className="block text-[10px] font-bold text-gray-400 mb-3 uppercase tracking-widest">
             Formato / Ratio
           </label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             {ASPECT_RATIO_OPTIONS.map((option) => (
               <button
                 key={option.value}
                 onClick={() => handleStandardRatioSelect(option.value)}
-                className={`flex items-center justify-between p-3 rounded-xl border-2 transition-all duration-200 ${
-                  aspectRatio === option.value && !isManual
+                className={`flex flex-col items-center justify-center p-2 rounded-xl border-2 transition-all duration-200 ${
+                  aspectRatio === option.value
                     ? 'border-[#8E2464] bg-[#8E2464]/5 text-[#8E2464]'
-                    : 'border-gray-100 bg-gray-50 text-gray-600 hover:border-gray-200'
+                    : 'border-gray-100 bg-gray-50 text-gray-500 hover:border-gray-200'
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <i className={`fa-solid ${option.icon || 'fa-crop-simple'} w-5 text-center`}></i>
-                  <span className="font-medium text-sm">{option.label}</span>
-                </div>
+                <i className={`fa-solid ${option.icon || 'fa-crop-simple'} mb-1`}></i>
+                <span className="font-bold text-[9px] uppercase">{option.label.split(' ')[0]}</span>
               </button>
             ))}
           </div>
@@ -139,35 +100,35 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
            <label className="block text-[10px] font-bold text-gray-500 mb-3 uppercase tracking-widest">
-            Ajustes de Marca (Branding)
+            Branding (Auto-Contraste)
           </label>
-          <div className="flex gap-2">
-            {(['none', 'white', 'black'] as LogoChoice[]).map((choice) => (
+          <div className="grid grid-cols-2 gap-2">
+            {(['none', 'auto', 'white', 'black'] as LogoChoice[]).map((choice) => (
               <button
                 key={choice}
                 onClick={() => setLogoChoice(choice)}
-                className={`flex-1 py-2 px-1 rounded-lg border-2 text-[10px] font-bold uppercase transition-all ${
+                className={`py-2 px-1 rounded-lg border-2 text-[9px] font-bold uppercase transition-all ${
                   logoChoice === choice 
                     ? 'border-[#8E2464] bg-[#8E2464] text-white' 
                     : 'border-gray-200 bg-white text-gray-400 hover:border-gray-300'
                 }`}
               >
-                {choice === 'none' ? 'Sin Logo' : choice === 'white' ? 'Blanco' : 'Negro'}
+                {choice === 'none' ? 'Sin Logo' : choice === 'auto' ? 'Auto' : choice === 'white' ? 'Blanco' : 'Negro'}
               </button>
             ))}
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wider">
+          <label className="block text-[10px] font-bold text-gray-400 mb-3 uppercase tracking-widest">
             Color de Fondo
           </label>
-          <div className="flex flex-wrap gap-2.5 p-3 bg-gray-50 rounded-xl border border-gray-100 justify-center">
+          <div className="flex flex-wrap gap-2 p-2 bg-gray-50 rounded-xl border border-gray-100 justify-center">
             {Object.entries(PALETTE).map(([name, hex]) => (
               <button
                 key={hex}
                 onClick={() => setSelectedBgColor(hex)}
-                className={`w-9 h-9 rounded-full border-2 transition-all duration-300 relative ${
+                className={`w-8 h-8 rounded-full border-2 transition-all duration-300 relative ${
                   selectedBgColor === hex 
                     ? 'border-[#8E2464] scale-110 shadow-md' 
                     : 'border-white hover:scale-105 shadow-sm'
@@ -184,27 +145,34 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
 
-        <div className="space-y-4">
-           <div>
+        <div className="space-y-5">
+          <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-[11px] font-bold text-gray-600 uppercase">Dispersión</label>
-              <span className="text-[11px] font-bold text-[#8E2464]">{dispersion}%</span>
+              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Densidad Figuras</label>
+              <span className="text-[10px] font-bold text-[#8E2464]">{density}%</span>
+            </div>
+            <input type="range" min="0" max="100" value={density} onChange={(e) => setDensity(parseInt(e.target.value))} className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#8E2464]"/>
+          </div>
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Dispersión</label>
+              <span className="text-[10px] font-bold text-[#8E2464]">{dispersion}%</span>
             </div>
             <input type="range" min="0" max="100" value={dispersion} onChange={(e) => setDispersion(parseInt(e.target.value))} className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#8E2464]"/>
           </div>
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-[11px] font-bold text-gray-600 uppercase">Vacío Central</label>
-              <span className="text-[11px] font-bold text-[#8E2464]">{centerExclusion}%</span>
+              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Vacío Central</label>
+              <span className="text-[10px] font-bold text-[#8E2464]">{centerExclusion}%</span>
             </div>
             <input type="range" min="0" max="100" value={centerExclusion} onChange={(e) => setCenterExclusion(parseInt(e.target.value))} className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#8E2464]"/>
           </div>
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-[11px] font-bold text-gray-600 uppercase">Tamaño Formas</label>
-              <span className="text-[11px] font-bold text-[#8E2464]">{shapeSize}%</span>
+              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Tamaño Formas</label>
+              <span className="text-[10px] font-bold text-[#8E2464]">{shapeSize}%</span>
             </div>
-            <input type="range" min="1" max="100" value={shapeSize} onChange={(e) => setShapeSize(parseInt(e.target.value))} className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#8E2464]"/>
+            <input type="range" min="5" max="100" value={shapeSize} onChange={(e) => setShapeSize(parseInt(e.target.value))} className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#8E2464]"/>
           </div>
         </div>
       </div>
@@ -219,7 +187,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               : 'bg-gradient-to-r from-[#8E2464] to-[#D97941] hover:shadow-[#8E2464]/20 hover:-translate-y-0.5 active:translate-y-0'
           }`}
         >
-          {isLoading ? <><i className="fa-solid fa-circle-notch fa-spin"></i><span>Generando...</span></> : <><i className="fa-solid fa-wand-magic-sparkles"></i><span>Generar Diseño</span></>}
+          {isLoading ? <><i className="fa-solid fa-circle-notch fa-spin"></i><span>Dibujando...</span></> : <><i className="fa-solid fa-wand-magic-sparkles"></i><span>Generar Diseño</span></>}
         </button>
       </div>
     </div>
