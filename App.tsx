@@ -66,12 +66,12 @@ const App: React.FC = () => {
     });
   }, [widthPx, heightPx, selectedBgColor, density, dispersion, centerExclusion, shapeSize]);
 
-  // AUTO-GENERACIÓN: Cuando cambian las dimensiones (clic en formato) o el color base, regeneramos automáticamente
+  // AUTO-GENERACIÓN: La imagen responde inmediatamente a CUALQUIER cambio en los parámetros artísticos
   useEffect(() => {
     handleGenerate();
-  }, [widthPx, heightPx, selectedBgColor]);
+  }, [widthPx, heightPx, selectedBgColor, density, dispersion, centerExclusion, shapeSize]);
 
-  // TIEMPO REAL: Aplica el logo cuando cambian los sliders de marca
+  // TIEMPO REAL LOGO: Aplica el logo cuando cambian los sliders de marca
   useEffect(() => {
     const updateLogoOverlay = async () => {
       if (!basePatternUrl) return;
@@ -136,7 +136,7 @@ const App: React.FC = () => {
       <main className="flex-1 flex flex-col bg-gray-50/40 relative min-h-[600px] lg:min-h-0 lg:overflow-hidden">
         <div className="w-full bg-[#8E2464] py-1.5 px-4 text-center z-20 shrink-0 shadow-sm">
           <p className="text-[9px] text-white font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-2">
-            Procedural Engine v5.1 • Real-Time Generation
+            Procedural Engine v5.2 • Full Live Interaction
           </p>
         </div>
 
