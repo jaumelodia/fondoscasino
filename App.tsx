@@ -12,11 +12,11 @@ const App: React.FC = () => {
   const [widthPx, setWidthPx] = useState<number>(1920);
   const [heightPx, setHeightPx] = useState<number>(1080);
   const [density, setDensity] = useState<number>(50); 
-  const [dispersion, setDispersion] = useState<number>(50);
+  const [dispersion, setDensityVal] = useState<number>(50);
   const [centerExclusion, setCenterExclusion] = useState<number>(50);
   const [shapeSize, setShapeSize] = useState<number>(50);
   
-  const [logoChoice, setLogoChoice] = useState<LogoChoice>('white');
+  const [logoChoice, setLogoChoice] = useState<LogoChoice>('black');
   const [logoX, setLogoX] = useState<number>(4);
   const [logoY, setLogoY] = useState<number>(4);
   const [logoScale, setLogoScale] = useState<number>(12);
@@ -110,7 +110,7 @@ const App: React.FC = () => {
         aspectRatio={aspectRatio} setAspectRatio={setAspectRatio}
         selectedBgColor={selectedBgColor} setSelectedBgColor={setSelectedBgColor}
         widthPx={widthPx} setWidthPx={setWidthPx} heightPx={heightPx} setHeightPx={setHeightPx}
-        density={density} setDensity={setDensity} dispersion={dispersion} setDispersion={setDispersion}
+        density={density} setDensity={setDensity} dispersion={dispersion} setDispersion={setDensityVal}
         centerExclusion={centerExclusion} setCenterExclusion={setCenterExclusion}
         shapeSize={shapeSize} setShapeSize={setShapeSize}
         logoChoice={logoChoice} setLogoChoice={setLogoChoice}

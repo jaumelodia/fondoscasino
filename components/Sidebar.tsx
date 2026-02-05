@@ -78,8 +78,6 @@ const Sidebar: React.FC<SidebarProps> = ({
     else if (ratio === 'A4') { setWidthPx(2480); setHeightPx(3508); }
 
     // Ajustar escala de logo por defecto
-    // Horizontal (16:9) y Clásico (4:3) -> 12%
-    // Otros -> 20%
     if (ratio === '16:9' || ratio === '4:3') {
       setLogoScale(12);
     } else {
@@ -102,14 +100,15 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <div className="w-full lg:w-[340px] bg-white border-r border-gray-100 h-screen flex flex-col shadow-xl z-30 relative shrink-0">
-      {/* LOGO EMPRESA */}
-      <div className="p-6 pb-2 flex items-center gap-3">
-        <div className="w-12 h-12 rounded-2xl bg-[#8E2464] flex items-center justify-center text-white shadow-lg shadow-[#8E2464]/20">
-          <i className="fa-solid fa-music text-xl"></i>
-        </div>
-        <div>
-          <h1 className="text-xl font-black text-gray-800 tracking-tight leading-none uppercase">Casino</h1>
-          <h2 className="text-xl font-black text-gray-800 tracking-tight leading-none uppercase">Musical</h2>
+      {/* LOGO EMPRESA - ACTUALIZADO A SVG OFICIAL - Tamaño reducido */}
+      <div className="p-6 pb-2">
+        <div className="w-full max-w-[150px] hover:opacity-80 transition-opacity cursor-default">
+          <svg viewBox="0 0 1000 450" className="w-full h-auto">
+            <path fill="#000000" d="M82.5 434.35c-31.76-5.1-58.28-24.14-72.26-51.87-1.67-3.31-4.32-10.06-5.88-15-2.7-8.5-2.86-9.95-2.85-26.98 0-19.41 1.16-25.92 6.95-39 11.02-24.93 40.37-48.66 65.65-53.08 9.54-1.67 32.91-1.96 40.39-.5 2.75.53 7.59 1.87 10.75 2.97l5.75 2 .17-31.69c.1-17.44.26-32.6.36-33.7s.25-26.98.33-57.51l.14-55.5 10.75-3.14c5.91-1.72 17.95-5.26 26.75-7.86 8.8-2.59 24.86-7.31 35.68-10.48l19.68-5.75 5.71 3.87c3.13 2.13 6.29 3.87 7.01 3.87s3.47-2.56 6.11-5.69c8-9.46 8.95-10.09 20.69-13.71 14.48-4.47 108.32-32.13 111.8-32.96 2.61-.63 2.7-.49 3.46 5.11.42 3.16.79 52.08.82 108.71l.04 102.97-13 4.09-13 4.1-11-5.21c-11.29-5.35-20.09-8.41-24.18-8.41H317v63c0 36.04.38 63 .89 63 .49 0 4.79-1.13 9.56-2.51 10.43-3.03 18.09-6.75 19.57-9.53 1.03-1.92 2.75-23 1.88-22.92-.22.02-4.23 1.31-8.9 2.88s-8.84 2.65-9.25 2.4c-.41-.24-.75-7.58-.75-16.31 0-14.25.18-15.93 1.75-16.4 10.65-3.18 47.14-13.61 47.62-13.61.35 0 .63 17.37.63 38.6 0 32.31-.25 39.12-1.51 41.77-2.84 6-25.82 19.41-40.52 23.66-9.13 2.63-29.23 3.71-39.47 2.12-11.46-1.79-25.77-7.1-34.96-12.99-9.82-6.28-22.84-18.92-29.55-28.68-21.8-31.68-20.36-77.55 3.39-108.3 13.81-17.89 32.38-29.92 54.62-35.4 11.92-2.94 30.05-2.92 42.74.06 5.08 1.19 10.33 2.16 11.66 2.16h2.41l.14-15.25c.08-8.39-.17-24.96-.55-36.83l-.69-21.58-13.1 3.88c-7.21 2.14-20.76 6.15-30.11 8.92-25.44 7.53-43.62 13.61-47.1 15.74-1.7 1.05-5.94 5.44-9.41 9.76s-6.88 8.48-7.57 9.24c-1.05 1.16-2.49.38-8.71-4.71l-7.46-6.1-13.59 3.88c-7.47 2.14-21.25 6.24-30.62 9.13L163 168.31v115.63l-5.25 1.49c-2.89.82-9.17 2.46-13.95 3.64l-8.7 2.15-10.3-5.1c-9.29-4.6-23.12-9.13-24.3-7.96-.25.26-.49 28.56-.52 62.9l-.07 62.44 2.8-.35c4.63-.57 14.28-4.18 23.52-8.79 4.8-2.4 9.31-4.36 10.01-4.36 1.25 0 20.6 7.45 26.01 10.02 1.51.71 2.75 1.73 2.75 2.26 0 3.04-20.93 18.82-31.72 23.91-11.97 5.65-21.64 7.89-35.78 8.3-6.6.19-13.35.13-15-.14"/>
+            <text x="500" y="120" fontSize="110" fontFamily="Limelight" fill="#000000">Casino</text>
+            <text x="500" y="260" fontSize="110" fontFamily="Limelight" fill="#000000">Musical</text>
+            <text x="500" y="400" fontSize="110" fontFamily="Limelight" fill="#000000">Godella</text>
+          </svg>
         </div>
       </div>
 
@@ -232,7 +231,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
 
-        {/* TEXTO (Solo si está habilitado) */}
+        {/* TEXTO */}
         <div className={`rounded-3xl border p-5 transition-all ${textConfig.enabled ? 'bg-purple-50 border-purple-100 shadow-sm' : 'bg-gray-50 border-gray-50 opacity-60'}`}>
           <div className="flex items-center justify-between mb-4">
              <div className="flex items-center gap-2">
