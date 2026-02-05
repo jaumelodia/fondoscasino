@@ -1,6 +1,6 @@
 
 export type AspectRatio = '1:1' | '16:9' | '9:16' | '4:3' | '3:4' | 'A4';
-export type LogoChoice = 'none' | 'white' | 'black' | 'auto';
+export type LogoChoice = 'none' | 'white' | 'black';
 
 export interface CustomDimensions {
   width: number;
@@ -18,4 +18,10 @@ export interface GeneratedImage {
 export interface GeneratorConfig {
   aspectRatio: AspectRatio;
   intensity: 'minimal' | 'balanced' | 'complex';
+}
+
+export interface LogoConfig {
+  x: number;
+  y: number;
+  scale: number;
 }

@@ -24,6 +24,13 @@ interface SidebarProps {
   setShapeSize: (val: number) => void;
   logoChoice: LogoChoice;
   setLogoChoice: (choice: LogoChoice) => void;
+  logoX: number;
+  setLogoX: (val: number) => void;
+  logoY: number;
+  setLogoY: (val: number) => void;
+  logoScale: number;
+  setLogoScale: (val: number) => void;
+  onResetLogo: () => void;
   onOpenKeySelector: () => void;
   hasCustomKey: boolean;
 }
@@ -45,6 +52,13 @@ const Sidebar: React.FC<SidebarProps> = ({
   setShapeSize,
   logoChoice,
   setLogoChoice,
+  logoX,
+  setLogoX,
+  logoY,
+  setLogoY,
+  logoScale,
+  setLogoScale,
+  onResetLogo,
   setWidthPx,
   setHeightPx
 }) => {
@@ -73,9 +87,10 @@ const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       <div className="space-y-6 flex-1 lg:overflow-y-auto pr-0 lg:pr-2 custom-scrollbar text-gray-700">
+        {/* FORMATO */}
         <div>
           <label className="block text-[10px] font-bold text-gray-400 mb-3 uppercase tracking-widest">
-            Formato / Ratio
+            Formato de Imagen
           </label>
           <div className="grid grid-cols-2 gap-2">
             {ASPECT_RATIO_OPTIONS.map((option) => (
@@ -95,123 +110,125 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
 
-        <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-           <label className="block text-[10px] font-bold text-gray-500 mb-3 uppercase tracking-widest">
-            Superposición de Logo
-          </label>
-          <div className="grid grid-cols-2 gap-2">
-            {(['none', 'auto', 'white', 'black'] as LogoChoice[]).map((choice) => (
+        {/* EDITOR INTERACTIVO DEL LOGO */}
+        <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-4 shadow-inner">
+           <div className="flex items-center justify-between mb-1">
+              <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-widest flex items-center gap-2">
+                <i className="fa-solid fa-crosshairs"></i> Posición del Logo
+              </label>
+           </div>
+          
+          <div className="grid grid-cols-3 gap-1">
+            {(['none', 'white', 'black'] as LogoChoice[]).map((choice) => (
               <button
                 key={choice}
                 onClick={() => setLogoChoice(choice)}
-                className={`py-2 px-1 rounded-lg border-2 text-[9px] font-bold uppercase transition-all ${
+                className={`py-2 rounded-lg border-2 text-[8px] font-bold uppercase transition-all ${
                   logoChoice === choice 
-                    ? 'border-[#8E2464] bg-[#8E2464] text-white shadow-sm' 
+                    ? 'border-[#8E2464] bg-[#8E2464] text-white' 
                     : 'border-gray-200 bg-white text-gray-400 hover:border-gray-300'
                 }`}
               >
-                {choice === 'none' ? 'Sin Logo' : choice === 'auto' ? 'Auto' : choice === 'white' ? 'Blanco' : 'Negro'}
+                {choice === 'none' ? 'Sin Logo' : choice === 'white' ? 'Blanco' : 'Negro'}
               </button>
             ))}
           </div>
-          
-          <div className="mt-4 pt-3 border-t border-gray-200">
-            <span className="text-[8px] text-gray-400 font-bold uppercase block mb-2">Activos de Branding:</span>
-            <div className="flex flex-col gap-1.5">
-              <a 
-                href="https://github.com/jaumelodia/fondoscasino/blob/18759cd4e3007c4feeda04f763808f565ebde06a/logo-blanco.png" 
-                target="_blank" 
-                rel="noreferrer"
-                className="text-[9px] text-indigo-600 hover:text-indigo-800 flex items-center gap-2 font-medium"
+
+          {logoChoice !== 'none' && (
+            <div className="space-y-4 pt-2 border-t border-gray-200">
+               <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-[9px] font-bold text-gray-400 uppercase">Margen X (Izq)</label>
+                  <span className="text-[9px] font-black text-[#8E2464] bg-white px-2 py-0.5 rounded shadow-sm">{logoX}%</span>
+                </div>
+                <input type="range" min="0" max="100" step="0.1" value={logoX} onChange={(e) => setLogoX(parseFloat(e.target.value))} className="w-full h-1 bg-gray-300 rounded-lg appearance-none cursor-pointer accent-[#8E2464]"/>
+              </div>
+              
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-[9px] font-bold text-gray-400 uppercase">Margen Y (Sup)</label>
+                  <span className="text-[9px] font-black text-[#8E2464] bg-white px-2 py-0.5 rounded shadow-sm">{logoY}%</span>
+                </div>
+                <input type="range" min="0" max="100" step="0.1" value={logoY} onChange={(e) => setLogoY(parseFloat(e.target.value))} className="w-full h-1 bg-gray-300 rounded-lg appearance-none cursor-pointer accent-[#8E2464]"/>
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-[9px] font-bold text-gray-400 uppercase">Escala Logo</label>
+                  <span className="text-[9px] font-black text-[#8E2464] bg-white px-2 py-0.5 rounded shadow-sm">{logoScale}%</span>
+                </div>
+                <input type="range" min="1" max="50" step="0.1" value={logoScale} onChange={(e) => setLogoScale(parseFloat(e.target.value))} className="w-full h-1 bg-gray-300 rounded-lg appearance-none cursor-pointer accent-[#8E2464]"/>
+              </div>
+              
+              <button 
+                onClick={onResetLogo}
+                className="w-full py-3 bg-gradient-to-r from-[#8E2464] to-[#D97941] text-white rounded-xl text-[11px] font-black uppercase hover:shadow-lg hover:shadow-[#8E2464]/30 transition-all flex items-center justify-center gap-2 active:scale-95 border-2 border-white/20"
               >
-                <i className="fa-solid fa-cloud-arrow-down"></i> logo-blanco.png
-              </a>
-              <a 
-                href="https://github.com/jaumelodia/fondoscasino/blob/18759cd4e3007c4feeda04f763808f565ebde06a/logo-negro.png" 
-                target="_blank" 
-                rel="noreferrer"
-                className="text-[9px] text-indigo-600 hover:text-indigo-800 flex items-center gap-2 font-medium"
-              >
-                <i className="fa-solid fa-cloud-arrow-down"></i> logo-negro.png
-              </a>
+                <i className="fa-solid fa-wand-magic-sparkles text-[12px] animate-pulse"></i>
+                AUTO (4% / 12%)
+              </button>
             </div>
-          </div>
+          )}
         </div>
 
+        {/* COLOR FONDO */}
         <div>
           <label className="block text-[10px] font-bold text-gray-400 mb-3 uppercase tracking-widest">
-            Color de Fondo
+            Color Base
           </label>
           <div className="flex flex-wrap gap-2 p-2 bg-gray-50 rounded-xl border border-gray-100 justify-center">
             {Object.entries(PALETTE).map(([name, hex]) => (
               <button
                 key={hex}
                 onClick={() => setSelectedBgColor(hex)}
-                className={`w-8 h-8 rounded-full border-2 transition-all duration-300 relative ${
+                className={`w-7 h-7 rounded-full border-2 transition-all duration-300 relative ${
                   selectedBgColor === hex 
                     ? 'border-[#8E2464] scale-110 shadow-md' 
                     : 'border-white hover:scale-105 shadow-sm'
                 }`}
                 style={{ backgroundColor: hex }}
-              >
-                {selectedBgColor === hex && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <i className={`fa-solid fa-check text-[10px] ${['#F1F3D5', '#F2B035', '#B1D7C3'].includes(hex) ? 'text-gray-800' : 'text-white'}`}></i>
-                  </div>
-                )}
-              </button>
+              />
             ))}
           </div>
         </div>
 
-        <div className="space-y-5">
+        {/* PARÁMETROS GENERATIVOS */}
+        <div className="space-y-4">
+          <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest">Ajustes del Arte</label>
           <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Densidad Figuras</label>
-              <span className="text-[10px] font-bold text-[#8E2464]">{density}%</span>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-[10px] font-bold text-gray-500 uppercase">Densidad</label>
+              <span className="text-[10px] font-bold text-gray-400">{density}%</span>
             </div>
-            <input type="range" min="0" max="100" value={density} onChange={(e) => setDensity(parseInt(e.target.value))} className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#8E2464]"/>
+            <input type="range" min="0" max="100" value={density} onChange={(e) => setDensity(parseInt(e.target.value))} className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-gray-400"/>
           </div>
           <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Dispersión</label>
-              <span className="text-[10px] font-bold text-[#8E2464]">{dispersion}%</span>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-[10px] font-bold text-gray-500 uppercase">Vacío Central</label>
+              <span className="text-[10px] font-bold text-gray-400">{centerExclusion}%</span>
             </div>
-            <input type="range" min="0" max="100" value={dispersion} onChange={(e) => setDispersion(parseInt(e.target.value))} className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#8E2464]"/>
-          </div>
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Vacío Central</label>
-              <span className="text-[10px] font-bold text-[#8E2464]">{centerExclusion}%</span>
-            </div>
-            <input type="range" min="0" max="100" value={centerExclusion} onChange={(e) => setCenterExclusion(parseInt(e.target.value))} className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#8E2464]"/>
-          </div>
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Tamaño Formas</label>
-              <span className="text-[10px] font-bold text-[#8E2464]">{shapeSize}%</span>
-            </div>
-            <input type="range" min="5" max="100" value={shapeSize} onChange={(e) => setShapeSize(parseInt(e.target.value))} className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#8E2464]"/>
+            <input type="range" min="0" max="100" value={centerExclusion} onChange={(e) => setCenterExclusion(parseInt(e.target.value))} className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-gray-400"/>
           </div>
         </div>
       </div>
 
+      {/* BOTÓN GENERAR ARTE (EXTRA) */}
       <div className="mt-6 pt-6 border-t border-gray-100">
         <button
           onClick={onGenerate}
           disabled={isLoading}
           className={`w-full py-4 px-6 rounded-2xl font-bold text-white shadow-lg transition-all duration-300 flex items-center justify-center gap-2 ${
             isLoading 
-              ? 'bg-gray-400 cursor-not-allowed' 
-              : 'bg-gradient-to-r from-[#8E2464] to-[#D97941] hover:shadow-[#8E2464]/20 active:scale-[0.98]'
+              ? 'bg-gray-300 cursor-not-allowed' 
+              : 'bg-gradient-to-r from-gray-700 to-gray-900 hover:shadow-black/10 active:scale-[0.98]'
           }`}
         >
           {isLoading ? (
             <i className="fa-solid fa-circle-notch animate-spin"></i>
           ) : (
-            <i className="fa-solid fa-wand-magic-sparkles"></i>
+            <i className="fa-solid fa-shuffle"></i>
           )}
-          {isLoading ? 'Generando...' : 'Generar Fondo'}
+          {isLoading ? 'Redibujando...' : 'Nueva Variación'}
         </button>
       </div>
     </div>
