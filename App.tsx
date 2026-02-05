@@ -16,11 +16,11 @@ const App: React.FC = () => {
   const [centerExclusion, setCenterExclusion] = useState<number>(50);
   const [shapeSize, setShapeSize] = useState<number>(50);
   
-  // Valores por defecto: X: 4%, Y: 4%, Escala: 12%
+  // Margen por defecto: 4%, 4%
   const [logoChoice, setLogoChoice] = useState<LogoChoice>('white');
   const [logoX, setLogoX] = useState<number>(4);
   const [logoY, setLogoY] = useState<number>(4);
-  const [logoScale, setLogoScale] = useState<number>(12);
+  const [logoScale, setLogoScale] = useState<number>(12); // Inicial para 16:9
 
   const [selectedBgColor, setSelectedBgColor] = useState<string>(PALETTE.crema);
   const [currentImage, setCurrentImage] = useState<string | null>(null);
@@ -37,8 +37,11 @@ const App: React.FC = () => {
   const handleResetLogo = useCallback(() => {
     setLogoX(4);
     setLogoY(4);
-    setLogoScale(12);
-  }, []);
+    
+    // Escala por defecto contextual
+    const verticalFormats: AspectRatio[] = ['A4', '9:16', '3:4'];
+    setLogoScale(verticalFormats.includes(aspectRatio) ? 20 : 12);
+  }, [aspectRatio]);
 
   // Función para generar SOLO el fondo procedural
   const handleGenerate = useCallback(() => {

@@ -1,12 +1,12 @@
 
 /**
- * Servicio de Branding Profesional V5.6
- * - Recurso base: Logo NEGRO.
+ * Servicio de Branding Profesional V5.7
+ * - Recurso base: Logo NEGRO (Alojado en ImgBB).
  * - Logo BLANCO generado mediante inversión de colores (invert 100%).
  */
 
-// URL del logo NEGRO (fuente original)
-const LOGO_URL = 'https://raw.githubusercontent.com/jaumelodia/fondoscasino/main/logos/logo-casino-musical.png';
+// Nueva URL del logo NEGRO (fuente externa fiable)
+const LOGO_URL = 'https://i.ibb.co/21PwstZG/logo-casino-musical.png';
 
 // Caché para el logo procesado (recortado)
 let processedLogoCache: HTMLCanvasElement | null = null;
@@ -71,6 +71,9 @@ const loadAndProcessLogo = (): Promise<HTMLCanvasElement> => {
   
   return new Promise((resolve, reject) => {
     const img = new Image();
+    // Añadimos cache-buster para evitar problemas de cabeceras CORS cacheadas
+    const cacheBuster = `?t=${Date.now()}`;
+    
     img.crossOrigin = "anonymous"; 
     
     img.onload = () => {
@@ -84,17 +87,17 @@ const loadAndProcessLogo = (): Promise<HTMLCanvasElement> => {
     };
     
     img.onerror = () => {
-      reject(new Error(`Error de red: No se pudo cargar el logo desde la URL de GitHub.`));
+      reject(new Error(`Error de red: No se pudo cargar el logo desde el servidor de imágenes. Inténtalo de nuevo.`));
     };
     
-    img.src = LOGO_URL;
+    img.src = LOGO_URL + cacheBuster;
   });
 };
 
 export const preloadLogos = async (): Promise<void> => {
   try {
     await loadAndProcessLogo();
-    console.log("Branding: Logo negro cargado correctamente.");
+    console.log("Branding: Logo cargado y optimizado correctamente.");
   } catch (err) {
     console.warn("Branding: Error en pre-carga de logos.", err);
   }

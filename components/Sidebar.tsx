@@ -83,13 +83,26 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const handleStandardRatioSelect = (ratio: AspectRatio) => {
     setAspectRatio(ratio);
-    if (ratio === '16:9') { setWidthPx(1920); setHeightPx(1080); }
-    else if (ratio === '9:16') { setWidthPx(1080); setHeightPx(1920); }
-    else if (ratio === '1:1') { setWidthPx(1080); setHeightPx(1080); }
-    else if (ratio === '4:3') { setWidthPx(1440); setHeightPx(1080); }
-    else if (ratio === '3:4') { setWidthPx(1080); setHeightPx(1440); }
-    else if (ratio === 'A4') { setWidthPx(2480); setHeightPx(3508); }
-    // Si es 'custom', mantenemos las actuales o dejamos que el usuario las edite
+    
+    // Configuración de dimensiones y escala de logo por defecto
+    if (ratio === '16:9') { 
+      setWidthPx(1920); setHeightPx(1080); setLogoScale(12);
+    }
+    else if (ratio === '9:16') { 
+      setWidthPx(1080); setHeightPx(1920); setLogoScale(20);
+    }
+    else if (ratio === '1:1') { 
+      setWidthPx(1080); setHeightPx(1080); setLogoScale(12);
+    }
+    else if (ratio === '4:3') { 
+      setWidthPx(1440); setHeightPx(1080); setLogoScale(12);
+    }
+    else if (ratio === '3:4') { 
+      setWidthPx(1080); setHeightPx(1440); setLogoScale(20);
+    }
+    else if (ratio === 'A4') { 
+      setWidthPx(2480); setHeightPx(3508); setLogoScale(20);
+    }
   };
 
   const updateDimensions = (val: string, type: 'w' | 'h') => {
@@ -247,7 +260,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 className="w-full py-3 bg-gradient-to-r from-[#8E2464] to-[#D97941] text-white rounded-xl text-[11px] font-black uppercase hover:shadow-lg hover:shadow-[#8E2464]/30 transition-all flex items-center justify-center gap-2 active:scale-95 border-2 border-white/20"
               >
                 <i className="fa-solid fa-wand-magic-sparkles text-[12px] animate-pulse"></i>
-                AUTO (4% / 12%)
+                RESETEAR (AUTO)
               </button>
             </div>
           )}
