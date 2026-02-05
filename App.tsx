@@ -2,7 +2,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import Sidebar from './components/Sidebar.tsx';
 import BackgroundPreview from './components/BackgroundPreview.tsx';
-import { AspectRatio, GeneratedImage, LogoChoice } from './types.ts';
+import { AspectRatio, LogoChoice, TextConfig } from './types.ts';
 import { drawBauhausPattern } from './services/proceduralService.ts';
 import { applyBranding, preloadLogos } from './services/brandingService.ts';
 import { PALETTE } from './constants.ts';
@@ -16,11 +16,19 @@ const App: React.FC = () => {
   const [centerExclusion, setCenterExclusion] = useState<number>(50);
   const [shapeSize, setShapeSize] = useState<number>(50);
   
-  // Margen por defecto: 4%, 4%
   const [logoChoice, setLogoChoice] = useState<LogoChoice>('white');
   const [logoX, setLogoX] = useState<number>(4);
   const [logoY, setLogoY] = useState<number>(4);
-  const [logoScale, setLogoScale] = useState<number>(12); // Inicial para 16:9
+  const [logoScale, setLogoScale] = useState<number>(12);
+
+  const [textConfig, setTextConfig] = useState<TextConfig>({
+    enabled: false,
+    content: 'Añade un texto',
+    x: 50,
+    y: 50,
+    fontSize: 8,
+    color: 'black'
+  });
 
   const [selectedBgColor, setSelectedBgColor] = useState<string>(PALETTE.crema);
   const [currentImage, setCurrentImage] = useState<string | null>(null);
@@ -29,66 +37,41 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [brandingError, setBrandingError] = useState<string | null>(null);
 
-  // Pre-cargar logos al iniciar
-  useEffect(() => {
-    preloadLogos();
-  }, []);
+  useEffect(() => { preloadLogos(); }, []);
 
   const handleResetLogo = useCallback(() => {
-    setLogoX(4);
-    setLogoY(4);
-    
-    // Escala por defecto contextual
-    // Se añade '1:1' a los formatos que usan escala del 20%
+    setLogoX(4); setLogoY(4);
     const scale20Formats: AspectRatio[] = ['A4', '9:16', '3:4', '1:1'];
     setLogoScale(scale20Formats.includes(aspectRatio) ? 20 : 12);
   }, [aspectRatio]);
 
-  // Función para generar SOLO el fondo procedural
   const handleGenerate = useCallback(() => {
     setIsLoading(true);
     setBrandingError(null);
-    
-    // Usamos requestAnimationFrame para asegurar que el UI no se bloquee antes del renderizado de canvas pesado
     requestAnimationFrame(() => {
       try {
-        const patternUrl = drawBauhausPattern(
-          widthPx, 
-          heightPx, 
-          selectedBgColor, 
-          density, 
-          dispersion, 
-          centerExclusion, 
-          shapeSize
-        );
+        const patternUrl = drawBauhausPattern(widthPx, heightPx, selectedBgColor, density, dispersion, centerExclusion, shapeSize);
         setBasePatternUrl(patternUrl);
       } catch (err) {
-        console.error("Error en motor procedural:", err);
+        console.error(err);
       } finally {
         setIsLoading(false);
       }
     });
   }, [widthPx, heightPx, selectedBgColor, density, dispersion, centerExclusion, shapeSize]);
 
-  // AUTO-GENERACIÓN: La imagen responde inmediatamente a CUALQUIER cambio en los parámetros artísticos
+  // Regeneración automática cuando cambian los parámetros visuales (excepto dimensiones para evitar lag al escribir)
   useEffect(() => {
     handleGenerate();
-  }, [widthPx, heightPx, selectedBgColor, density, dispersion, centerExclusion, shapeSize]);
+  }, [selectedBgColor, density, dispersion, centerExclusion, shapeSize]);
 
-  // TIEMPO REAL LOGO: Aplica el logo cuando cambian los sliders de marca
   useEffect(() => {
     const updateLogoOverlay = async () => {
       if (!basePatternUrl) return;
-
-      if (logoChoice === 'none') {
-        setCurrentImage(basePatternUrl);
-        return;
-      }
-
       try {
         const finalUrl = await applyBranding(
           basePatternUrl, 
-          logoChoice as 'white' | 'black',
+          logoChoice,
           logoX,
           logoY,
           logoScale
@@ -99,68 +82,51 @@ const App: React.FC = () => {
         setCurrentImage(basePatternUrl);
       }
     };
-
     updateLogoOverlay();
   }, [basePatternUrl, logoChoice, logoX, logoY, logoScale]);
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen lg:h-screen bg-[#FDFCF7] lg:overflow-hidden">
+    <div className="flex h-screen bg-[#fcfcfc] overflow-hidden">
+      {/* BARRA LATERAL (CONTROLES) */}
       <Sidebar 
-        aspectRatio={aspectRatio}
-        setAspectRatio={setAspectRatio}
-        selectedBgColor={selectedBgColor}
-        setSelectedBgColor={setSelectedBgColor}
-        widthPx={widthPx}
-        setWidthPx={setWidthPx}
-        heightPx={heightPx}
-        setHeightPx={setHeightPx}
-        density={density}
-        setDensity={setDensity}
-        dispersion={dispersion}
-        setDispersion={setDispersion}
-        centerExclusion={centerExclusion}
-        setCenterExclusion={setCenterExclusion}
-        shapeSize={shapeSize}
-        setShapeSize={setShapeSize}
-        logoChoice={logoChoice}
-        setLogoChoice={setLogoChoice}
-        logoX={logoX}
-        setLogoX={setLogoX}
-        logoY={logoY}
-        setLogoY={setLogoY}
-        logoScale={logoScale}
-        setLogoScale={setLogoScale}
-        onResetLogo={handleResetLogo}
-        onGenerate={handleGenerate}
-        isLoading={isLoading}
-        onOpenKeySelector={() => {}}
-        hasCustomKey={true}
+        aspectRatio={aspectRatio} setAspectRatio={setAspectRatio}
+        selectedBgColor={selectedBgColor} setSelectedBgColor={setSelectedBgColor}
+        widthPx={widthPx} setWidthPx={setWidthPx} heightPx={heightPx} setHeightPx={setHeightPx}
+        density={density} setDensity={setDensity} dispersion={dispersion} setDispersion={setDispersion}
+        centerExclusion={centerExclusion} setCenterExclusion={setCenterExclusion}
+        shapeSize={shapeSize} setShapeSize={setShapeSize}
+        logoChoice={logoChoice} setLogoChoice={setLogoChoice}
+        logoX={logoX} setLogoX={setLogoX} logoY={logoY} setLogoY={setLogoY}
+        logoScale={logoScale} setLogoScale={setLogoScale}
+        onResetLogo={handleResetLogo} onGenerate={handleGenerate}
+        isLoading={isLoading} textConfig={textConfig} setTextConfig={setTextConfig}
       />
 
-      <main className="flex-1 flex flex-col bg-gray-50/40 relative min-h-[600px] lg:min-h-0 lg:overflow-hidden">
-        <div className="w-full bg-[#8E2464] py-1.5 px-4 text-center z-20 shrink-0 shadow-sm">
-          <p className="text-[9px] text-white font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-2">
-            Procedural Engine v5.2 • Full Live Interaction
-          </p>
+      {/* ESCRITORIO DE TRABAJO (LIENZO) */}
+      <main className="flex-1 flex flex-col relative overflow-hidden bg-gray-100/30">
+        {/* CABECERA ESTILO APP PROFESIONAL */}
+        <div className="w-full bg-[#8E2464] py-2.5 px-6 flex justify-between items-center shadow-lg z-20">
+          <p className="text-[10px] text-white font-black tracking-[0.3em] uppercase">Procedural Engine v6.3 • Full Studio Interaction</p>
+          <div className="flex gap-4">
+            <span className="text-[10px] text-white/50 font-bold uppercase tracking-widest">{widthPx} x {heightPx} px</span>
+          </div>
         </div>
 
-        {brandingError && (
-          <div className="mx-8 mt-4 bg-red-50 border border-red-200 p-4 rounded-xl flex items-center gap-4 z-30 shadow-sm">
-            <div className="bg-red-100 text-red-600 w-10 h-10 rounded-full flex items-center justify-center shrink-0">
-              <i className="fa-solid fa-triangle-exclamation"></i>
-            </div>
-            <p className="text-[10px] text-red-600 leading-tight flex-1">{brandingError}</p>
-            <button onClick={() => setBrandingError(null)} className="text-red-400"><i className="fa-solid fa-xmark"></i></button>
-          </div>
-        )}
-
-        <div className="flex-1 w-full flex flex-col items-center justify-center p-4 lg:p-8 overflow-visible lg:overflow-hidden">
+        {/* ÁREA DEL LIENZO */}
+        <div className="flex-1 w-full flex items-center justify-center p-8 lg:p-12">
           <BackgroundPreview 
             imageUrl={currentImage} 
             isLoading={isLoading}
             aspectRatio={aspectRatio}
             width={widthPx}
             height={heightPx}
+            textConfig={textConfig}
+            setTextConfig={setTextConfig}
+            basePatternUrl={basePatternUrl}
+            logoChoice={logoChoice}
+            logoX={logoX}
+            logoY={logoY}
+            logoScale={logoScale}
           />
         </div>
       </main>

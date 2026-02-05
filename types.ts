@@ -2,6 +2,15 @@
 export type AspectRatio = '1:1' | '16:9' | '9:16' | '4:3' | '3:4' | 'A4' | 'custom';
 export type LogoChoice = 'none' | 'white' | 'black';
 
+export interface TextConfig {
+  enabled: boolean;
+  content: string;
+  x: number; // Porcentaje 0-100
+  y: number; // Porcentaje 0-100
+  fontSize: number; // Porcentaje relativo al ancho de la imagen
+  color: 'black' | 'white';
+}
+
 export interface CustomDimensions {
   width: number;
   height: number;
@@ -13,15 +22,4 @@ export interface GeneratedImage {
   timestamp: number;
   aspectRatio: AspectRatio;
   dimensions?: CustomDimensions;
-}
-
-export interface GeneratorConfig {
-  aspectRatio: AspectRatio;
-  intensity: 'minimal' | 'balanced' | 'complex';
-}
-
-export interface LogoConfig {
-  x: number;
-  y: number;
-  scale: number;
 }
