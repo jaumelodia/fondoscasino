@@ -1,11 +1,10 @@
 
 import { PALETTE } from "../constants.ts";
+import { ShapeData } from "../types.ts";
 
 /**
- * Motor de Arte Generativo Bauhaus Procedural V3.3
- * - Exclusión elíptica proporcional para el Vacío Central.
- * - Algoritmo de candidatos para dispersión inteligente.
- * - Formas geométricas puras (sin semicírculos).
+ * Motor de Arte Generativo Bauhaus Procedural V3.4
+ * - Ahora devuelve los metadatos de las formas para exportación vectorial.
  */
 
 interface Point {
@@ -21,13 +20,13 @@ export const drawBauhausPattern = (
   dispersion: number,
   centerExclusion: number,
   shapeSize: number
-): string => {
+): { url: string; shapes: ShapeData[] } => {
   const canvas = document.createElement('canvas');
   canvas.width = width;
   canvas.height = height;
   const ctx = canvas.getContext('2d');
 
-  if (!ctx) return "";
+  if (!ctx) return { url: "", shapes: [] };
 
   // 1. Fondo sólido
   ctx.fillStyle = bgColor;
@@ -38,21 +37,19 @@ export const drawBauhausPattern = (
   const paletteColors = Object.values(PALETTE).filter(c => c !== bgColor);
   const minSide = Math.min(width, height);
   
-  // Parámetros de la Elipse de Exclusión
   const centerX = width / 2;
   const centerY = height / 2;
-  // El radio de la elipse escala con el porcentaje del slider (0 a 1.0)
   const exclusionA = (width / 2) * (centerExclusion / 100);
   const exclusionB = (height / 2) * (centerExclusion / 100);
 
   const placedShapes: Point[] = [];
+  const shapesData: ShapeData[] = [];
 
-  // 3. Dibujo de formas con algoritmo de dispersión y exclusión elíptica
+  // 3. Generación de formas
   for (let i = 0; i < numShapes; i++) {
     let bestX = Math.random() * width;
     let bestY = Math.random() * height;
     
-    // Dispersión: evaluamos múltiples candidatos para encontrar el lugar con más espacio
     const numCandidates = 1 + Math.floor((dispersion / 100) * 60);
     let maxMinDist = -1;
     let foundValidCandidate = false;
@@ -61,8 +58,6 @@ export const drawBauhausPattern = (
       const tx = Math.random() * width;
       const ty = Math.random() * height;
 
-      // VALIDACIÓN: ELIPSE DE VACÍO CENTRAL
-      // Ecuación: (x-h)^2/a^2 + (y-k)^2/b^2 < 1
       if (centerExclusion > 0) {
         const dx = tx - centerX;
         const dy = ty - centerY;
@@ -72,14 +67,12 @@ export const drawBauhausPattern = (
 
       foundValidCandidate = true;
 
-      // Si es la primera forma válida, la aceptamos
       if (placedShapes.length === 0) {
         bestX = tx;
         bestY = ty;
         break;
       }
 
-      // Cálculo de distancia a la forma más cercana para dispersión
       let minDistToOthers = Infinity;
       for (const other of placedShapes) {
         const d = Math.sqrt((tx - other.x) ** 2 + (ty - other.y) ** 2);
@@ -93,69 +86,81 @@ export const drawBauhausPattern = (
       }
     }
 
-    // Si no encontramos candidato (p.ej. exclusión 100%), saltamos
     if (!foundValidCandidate && placedShapes.length > 0) continue;
 
     placedShapes.push({ x: bestX, y: bestY });
 
-    // 4. Dibujar la forma elegida
-    ctx.save();
-    
-    // Tamaño basado en minSide para que no varíe drásticamente entre formatos
     const baseUnit = minSide * 0.25;
     const sScale = (shapeSize / 50) * (0.6 + Math.random() * 0.9);
     const w = baseUnit * sScale;
     const h = baseUnit * sScale;
-
-    ctx.translate(bestX, bestY);
-    ctx.rotate(Math.random() * Math.PI * 2);
+    const rotation = Math.random() * Math.PI * 2;
+    const color = paletteColors[Math.floor(Math.random() * paletteColors.length)];
+    const shapeTypeIdx = Math.floor(Math.random() * 5);
     
-    ctx.fillStyle = paletteColors[Math.floor(Math.random() * paletteColors.length)];
-    ctx.globalAlpha = 1.0;
+    const types: ShapeData['type'][] = ['rect', 'circle', 'triangle', 'trapezoid', 'rhombus'];
+    const type = types[shapeTypeIdx];
+    
+    const shape: ShapeData = {
+      type,
+      x: bestX,
+      y: bestY,
+      w,
+      h,
+      rotation,
+      color,
+      isSquare: type === 'rect' ? Math.random() > 0.5 : undefined,
+      topW: type === 'trapezoid' ? w * (0.4 + Math.random() * 0.4) : undefined
+    };
 
-    const shapeType = Math.floor(Math.random() * 5);
-    switch (shapeType) {
-      case 0: // Rectángulo / Cuadrado
-        const isSquare = Math.random() > 0.5;
-        ctx.fillRect(-w / 2, isSquare ? -w / 2 : -h / 2, w, isSquare ? w : h);
+    shapesData.push(shape);
+
+    // 4. Dibujar en Canvas (Vista Previa)
+    ctx.save();
+    ctx.translate(shape.x, shape.y);
+    ctx.rotate(shape.rotation);
+    ctx.fillStyle = shape.color;
+
+    switch (shape.type) {
+      case 'rect':
+        ctx.fillRect(-shape.w / 2, shape.isSquare ? -shape.w / 2 : -shape.h / 2, shape.w, shape.isSquare ? shape.w : shape.h);
         break;
-      case 1: // Círculo Completo
+      case 'circle':
         ctx.beginPath();
-        ctx.arc(0, 0, w / 2, 0, Math.PI * 2);
+        ctx.arc(0, 0, shape.w / 2, 0, Math.PI * 2);
         ctx.fill();
         break;
-      case 2: // Triángulo
+      case 'triangle':
         ctx.beginPath();
-        const triH = h * (Math.sqrt(3)/2);
+        const triH = shape.h * (Math.sqrt(3)/2);
         ctx.moveTo(0, -triH/2);
-        ctx.lineTo(w/2, triH/2);
-        ctx.lineTo(-w/2, triH/2);
+        ctx.lineTo(shape.w/2, triH/2);
+        ctx.lineTo(-shape.w/2, triH/2);
         ctx.closePath();
         ctx.fill();
         break;
-      case 3: // Trapecio
+      case 'trapezoid':
         ctx.beginPath();
-        const topW = w * (0.4 + Math.random() * 0.4);
-        ctx.moveTo(-topW / 2, -h / 2);
-        ctx.lineTo(topW / 2, -h / 2);
-        ctx.lineTo(w / 2, h / 2);
-        ctx.lineTo(-w / 2, h / 2);
+        const tW = shape.topW || shape.w * 0.5;
+        ctx.moveTo(-tW / 2, -shape.h / 2);
+        ctx.lineTo(tW / 2, -shape.h / 2);
+        ctx.lineTo(shape.w / 2, shape.h / 2);
+        ctx.lineTo(-shape.w / 2, shape.h / 2);
         ctx.closePath();
         ctx.fill();
         break;
-      case 4: // Rombo
+      case 'rhombus':
         ctx.beginPath();
-        ctx.moveTo(0, -h / 2);
-        ctx.lineTo(w / 2, 0);
-        ctx.lineTo(0, h / 2);
-        ctx.lineTo(-w / 2, 0);
+        ctx.moveTo(0, -shape.h / 2);
+        ctx.lineTo(shape.w / 2, 0);
+        ctx.lineTo(0, shape.h / 2);
+        ctx.lineTo(-shape.w / 2, 0);
         ctx.closePath();
         ctx.fill();
         break;
     }
-
     ctx.restore();
   }
 
-  return canvas.toDataURL('image/png');
+  return { url: canvas.toDataURL('image/png'), shapes: shapesData };
 };

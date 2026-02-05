@@ -2,6 +2,18 @@
 export type AspectRatio = '1:1' | '16:9' | '9:16' | '4:3' | '3:4' | 'A4' | 'custom';
 export type LogoChoice = 'none' | 'white' | 'black';
 
+export interface ShapeData {
+  type: 'rect' | 'circle' | 'triangle' | 'trapezoid' | 'rhombus';
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  rotation: number;
+  color: string;
+  isSquare?: boolean;
+  topW?: number;
+}
+
 export interface TextConfig {
   enabled: boolean;
   content: string;

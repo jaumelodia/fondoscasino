@@ -68,12 +68,23 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const handleStandardRatioSelect = (ratio: AspectRatio) => {
     setAspectRatio(ratio);
+    
+    // Ajustar dimensiones
     if (ratio === '16:9') { setWidthPx(1920); setHeightPx(1080); }
     else if (ratio === '9:16') { setWidthPx(1080); setHeightPx(1920); }
     else if (ratio === '1:1') { setWidthPx(1080); setHeightPx(1080); }
     else if (ratio === '4:3') { setWidthPx(1440); setHeightPx(1080); }
     else if (ratio === '3:4') { setWidthPx(1080); setHeightPx(1440); }
     else if (ratio === 'A4') { setWidthPx(2480); setHeightPx(3508); }
+
+    // Ajustar escala de logo por defecto
+    // Horizontal (16:9) y Clásico (4:3) -> 12%
+    // Otros -> 20%
+    if (ratio === '16:9' || ratio === '4:3') {
+      setLogoScale(12);
+    } else {
+      setLogoScale(20);
+    }
   };
 
   const handleWidthChange = (val: string) => {
