@@ -10,13 +10,14 @@ export const PALETTE = {
 };
 
 export const ASPECT_RATIO_OPTIONS: { label: string; value: any; icon?: string }[] = [
+  { label: 'Instagram (3:4)', value: '3:4', icon: 'fa-camera' },
+  { label: 'Historia (9:16)', value: '9:16', icon: 'fa-mobile-screen' },
   { label: 'Documento A4', value: 'A4', icon: 'fa-file-lines' },
-  { label: 'Personalizado', value: 'custom', icon: 'fa-sliders' },
   { label: 'Cuadrado (1:1)', value: '1:1', icon: 'fa-square' },
   { label: 'Horizontal (16:9)', value: '16:9', icon: 'fa-panorama' },
-  { label: 'Vertical (9:16)', value: '9:16', icon: 'fa-mobile-screen' },
   { label: 'Clásico (4:3)', value: '4:3', icon: 'fa-tv' },
-  { label: 'Fotografía (3:4)', value: '3:4', icon: 'fa-camera' },
+  { label: 'Personalizado', value: 'custom', icon: 'fa-sliders' },
+
 ];
 
 export const SYSTEM_INSTRUCTION = `Eres un generador de arte vectorial minimalista estilo Bauhaus.

@@ -39,8 +39,9 @@ const App: React.FC = () => {
     setLogoY(4);
     
     // Escala por defecto contextual
-    const verticalFormats: AspectRatio[] = ['A4', '9:16', '3:4'];
-    setLogoScale(verticalFormats.includes(aspectRatio) ? 20 : 12);
+    // Se añade '1:1' a los formatos que usan escala del 20%
+    const scale20Formats: AspectRatio[] = ['A4', '9:16', '3:4', '1:1'];
+    setLogoScale(scale20Formats.includes(aspectRatio) ? 20 : 12);
   }, [aspectRatio]);
 
   // Función para generar SOLO el fondo procedural

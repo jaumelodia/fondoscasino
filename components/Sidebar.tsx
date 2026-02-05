@@ -92,7 +92,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       setWidthPx(1080); setHeightPx(1920); setLogoScale(20);
     }
     else if (ratio === '1:1') { 
-      setWidthPx(1080); setHeightPx(1080); setLogoScale(12);
+      setWidthPx(1080); setHeightPx(1080); setLogoScale(20);
     }
     else if (ratio === '4:3') { 
       setWidthPx(1440); setHeightPx(1080); setLogoScale(12);
