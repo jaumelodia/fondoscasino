@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ASPECT_RATIO_OPTIONS, PALETTE } from '../constants';
 import { AspectRatio, LogoChoice } from '../types';
 
@@ -35,6 +35,8 @@ interface SidebarProps {
   hasCustomKey: boolean;
 }
 
+const PX_PER_CM = 118.11; // 300 DPI aproximado
+
 const Sidebar: React.FC<SidebarProps> = ({ 
   aspectRatio, 
   setAspectRatio, 
@@ -59,9 +61,26 @@ const Sidebar: React.FC<SidebarProps> = ({
   logoScale,
   setLogoScale,
   onResetLogo,
+  widthPx,
   setWidthPx,
+  heightPx,
   setHeightPx
 }) => {
+  const [unit, setUnit] = useState<'px' | 'cm'>('px');
+  const [localWidth, setLocalWidth] = useState<string>(widthPx.toString());
+  const [localHeight, setLocalHeight] = useState<string>(heightPx.toString());
+
+  // Sincronizar local con global cuando cambia el ratio o las dimensiones externas
+  useEffect(() => {
+    if (unit === 'px') {
+      setLocalWidth(widthPx.toString());
+      setLocalHeight(heightPx.toString());
+    } else {
+      setLocalWidth((widthPx / PX_PER_CM).toFixed(2));
+      setLocalHeight((heightPx / PX_PER_CM).toFixed(2));
+    }
+  }, [widthPx, heightPx, unit]);
+
   const handleStandardRatioSelect = (ratio: AspectRatio) => {
     setAspectRatio(ratio);
     if (ratio === '16:9') { setWidthPx(1920); setHeightPx(1080); }
@@ -69,7 +88,28 @@ const Sidebar: React.FC<SidebarProps> = ({
     else if (ratio === '1:1') { setWidthPx(1080); setHeightPx(1080); }
     else if (ratio === '4:3') { setWidthPx(1440); setHeightPx(1080); }
     else if (ratio === '3:4') { setWidthPx(1080); setHeightPx(1440); }
-    else if (ratio === 'A4') { setWidthPx(2480); setHeightPx(3508); } 
+    else if (ratio === 'A4') { setWidthPx(2480); setHeightPx(3508); }
+    // Si es 'custom', mantenemos las actuales o dejamos que el usuario las edite
+  };
+
+  const updateDimensions = (val: string, type: 'w' | 'h') => {
+    const num = parseFloat(val);
+    if (isNaN(num)) {
+        if (type === 'w') setLocalWidth(val);
+        else setLocalHeight(val);
+        return;
+    }
+
+    const finalPx = unit === 'cm' ? Math.round(num * PX_PER_CM) : Math.round(num);
+    
+    if (type === 'w') {
+        setLocalWidth(val);
+        setWidthPx(finalPx);
+    } else {
+        setLocalHeight(val);
+        setHeightPx(finalPx);
+    }
+    setAspectRatio('custom');
   };
 
   return (
@@ -108,6 +148,48 @@ const Sidebar: React.FC<SidebarProps> = ({
               </button>
             ))}
           </div>
+        </div>
+
+        {/* DIMENSIONES PERSONALIZADAS */}
+        <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-3 shadow-inner">
+          <div className="flex items-center justify-between">
+            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Medidas</label>
+            <div className="flex bg-gray-200 p-0.5 rounded-lg">
+              <button 
+                onClick={() => setUnit('px')}
+                className={`px-2 py-0.5 text-[8px] font-bold rounded-md transition-all ${unit === 'px' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-400'}`}
+              >PX</button>
+              <button 
+                onClick={() => setUnit('cm')}
+                className={`px-2 py-0.5 text-[8px] font-bold rounded-md transition-all ${unit === 'cm' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-400'}`}
+              >CM</button>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-[8px] font-bold text-gray-400 uppercase mb-1 block">Ancho</label>
+              <input 
+                type="text" 
+                value={localWidth}
+                onChange={(e) => updateDimensions(e.target.value, 'w')}
+                className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-[#8E2464] text-gray-700"
+                placeholder="0"
+              />
+            </div>
+            <div>
+              <label className="text-[8px] font-bold text-gray-400 uppercase mb-1 block">Alto</label>
+              <input 
+                type="text" 
+                value={localHeight}
+                onChange={(e) => updateDimensions(e.target.value, 'h')}
+                className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-[#8E2464] text-gray-700"
+                placeholder="0"
+              />
+            </div>
+          </div>
+          {unit === 'cm' && (
+             <p className="text-[7px] text-gray-400 italic">Conversión a 300 DPI para alta calidad.</p>
+          )}
         </div>
 
         {/* EDITOR INTERACTIVO DEL LOGO */}

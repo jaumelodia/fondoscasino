@@ -1,17 +1,15 @@
 
 /**
- * Servicio de Branding Profesional V5.4
- * Incluye auto-recorte de transparencia y lógica de inversión dinámica para el logo negro.
+ * Servicio de Branding Profesional V5.6
+ * - Recurso base: Logo NEGRO.
+ * - Logo BLANCO generado mediante inversión de colores (invert 100%).
  */
 
-const LOGO_URLS = {
-  // Usamos el mismo recurso para ambos, ya que el negro se generará por inversión
-  white: 'https://raw.githubusercontent.com/jaumelodia/fondoscasino/refs/heads/main/logos/IMG_0657.png',
-  black: 'https://raw.githubusercontent.com/jaumelodia/fondoscasino/refs/heads/main/logos/IMG_0657.png'
-};
+// URL del logo NEGRO (fuente original)
+const LOGO_URL = 'https://raw.githubusercontent.com/jaumelodia/fondoscasino/main/logos/logo-casino-musical.png';
 
-// Caché para los logos ya procesados (recortados)
-const logoCache: { [key: string]: HTMLCanvasElement } = {};
+// Caché para el logo procesado (recortado)
+let processedLogoCache: HTMLCanvasElement | null = null;
 
 /**
  * Escanea la imagen y devuelve un canvas recortado eliminando la transparencia sobrante.
@@ -33,7 +31,7 @@ const trimImage = (img: HTMLImageElement): HTMLCanvasElement => {
   for (let y = 0; y < imageData.height; y++) {
     for (let x = 0; x < imageData.width; x++) {
       const alpha = data[(y * imageData.width + x) * 4 + 3];
-      if (alpha > 0) {
+      if (alpha > 15) { // Umbral de opacidad para un recorte más limpio
         if (x < left) left = x;
         if (x > right) right = x;
         if (y < top) top = y;
@@ -42,7 +40,13 @@ const trimImage = (img: HTMLImageElement): HTMLCanvasElement => {
     }
   }
 
-  if (right < left || bottom < top) return tempCanvas;
+  if (right < left || bottom < top) {
+    const fallbackCanvas = document.createElement('canvas');
+    fallbackCanvas.width = img.width;
+    fallbackCanvas.height = img.height;
+    fallbackCanvas.getContext('2d')?.drawImage(img, 0, 0);
+    return fallbackCanvas;
+  }
 
   const trimmedWidth = right - left + 1;
   const trimmedHeight = bottom - top + 1;
@@ -59,32 +63,46 @@ const trimImage = (img: HTMLImageElement): HTMLCanvasElement => {
   return trimmedCanvas;
 };
 
-const loadAndProcessLogo = (src: string): Promise<HTMLCanvasElement> => {
-  if (logoCache[src]) return Promise.resolve(logoCache[src]);
+/**
+ * Carga el logo base (negro) y lo procesa.
+ */
+const loadAndProcessLogo = (): Promise<HTMLCanvasElement> => {
+  if (processedLogoCache) return Promise.resolve(processedLogoCache);
+  
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.crossOrigin = "anonymous"; 
+    
     img.onload = () => {
-      const processed = trimImage(img);
-      logoCache[src] = processed;
-      resolve(processed);
+      try {
+        const processed = trimImage(img);
+        processedLogoCache = processed;
+        resolve(processed);
+      } catch (e) {
+        reject(new Error("Error al procesar los píxeles del logo."));
+      }
     };
-    img.onerror = () => reject(new Error(`Error: No se pudo cargar el logo de marca.`));
-    img.src = src;
+    
+    img.onerror = () => {
+      reject(new Error(`Error de red: No se pudo cargar el logo desde la URL de GitHub.`));
+    };
+    
+    img.src = LOGO_URL;
   });
 };
 
 export const preloadLogos = async (): Promise<void> => {
   try {
-    // Al ser la misma URL, se cargará y cacheará una sola vez
-    await loadAndProcessLogo(LOGO_URLS.white);
+    await loadAndProcessLogo();
+    console.log("Branding: Logo negro cargado correctamente.");
   } catch (err) {
     console.warn("Branding: Error en pre-carga de logos.", err);
   }
 };
 
 /**
- * Aplica el logo sobre la imagen. Si es negro, aplica un filtro de inversión.
+ * Aplica el logo sobre la imagen. 
+ * El logo original es NEGRO; si se pide 'white', se invierte vía canvas filter.
  */
 export const applyBranding = async (
   backgroundImageUrl: string,
@@ -108,11 +126,9 @@ export const applyBranding = async (
   canvas.height = bgImg.height;
   ctx.drawImage(bgImg, 0, 0);
 
-  // Usamos siempre el recurso base (que es blanco)
-  const logoUrl = LOGO_URLS.white;
-  
   try {
-    const logoCanvas = await loadAndProcessLogo(logoUrl);
+    // Obtener el logo procesado (negro en origen)
+    const logoCanvas = await loadAndProcessLogo();
     
     const logoTargetWidth = (canvas.width * percentScale) / 100;
     const aspectRatio = logoCanvas.height / logoCanvas.width;
@@ -121,22 +137,24 @@ export const applyBranding = async (
     const posX = (canvas.width * percentX) / 100;
     const posY = (canvas.height * percentY) / 100;
     
-    ctx.save(); // Guardamos estado para no afectar al resto del canvas
-    
+    ctx.save();
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
     
-    // Si el usuario eligió negro, invertimos el logo blanco
-    if (logoChoice === 'black') {
+    // LÓGICA DE INVERSIÓN:
+    // El logo original es NEGRO. 
+    // Si elegimos 'white', aplicamos inversión total (Negro -> Blanco).
+    if (logoChoice === 'white') {
       ctx.filter = 'invert(100%)';
+    } else {
+      ctx.filter = 'none';
     }
     
     ctx.drawImage(logoCanvas, posX, posY, logoTargetWidth, logoTargetHeight);
-    
-    ctx.restore(); // Restauramos (equivale a ctx.filter = 'none')
+    ctx.restore();
     
     return canvas.toDataURL('image/png', 1.0);
-  } catch (err) {
-    throw new Error(`Branding: Error al estampar el logo.`);
+  } catch (err: any) {
+    throw new Error(err.message || "Error al estampar marca de agua.");
   }
 };

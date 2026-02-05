@@ -11,6 +11,7 @@ export const PALETTE = {
 
 export const ASPECT_RATIO_OPTIONS: { label: string; value: any; icon?: string }[] = [
   { label: 'Documento A4', value: 'A4', icon: 'fa-file-lines' },
+  { label: 'Personalizado', value: 'custom', icon: 'fa-sliders' },
   { label: 'Cuadrado (1:1)', value: '1:1', icon: 'fa-square' },
   { label: 'Horizontal (16:9)', value: '16:9', icon: 'fa-panorama' },
   { label: 'Vertical (9:16)', value: '9:16', icon: 'fa-mobile-screen' },
