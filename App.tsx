@@ -82,7 +82,7 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex flex-col lg:flex-row h-screen bg-[#FDFCF7] overflow-hidden">
+    <div className="flex flex-col lg:flex-row min-h-screen lg:h-screen bg-[#FDFCF7] lg:overflow-hidden">
       <Sidebar 
         aspectRatio={aspectRatio}
         setAspectRatio={setAspectRatio}
@@ -108,12 +108,12 @@ const App: React.FC = () => {
         hasCustomKey={true}
       />
 
-      <main className="flex-1 flex flex-col bg-gray-50/40 relative overflow-hidden">
+      <main className="flex-1 flex flex-col bg-gray-50/40 relative min-h-[600px] lg:min-h-0 lg:overflow-hidden">
         {/* Banner Superior de Estado */}
         <div className="w-full bg-[#8E2464] py-1.5 px-4 text-center z-20 shrink-0 shadow-sm">
           <p className="text-[9px] text-white font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-2">
-            <i className="fa-solid fa-cloud-arrow-down text-yellow-400"></i>
-            Procedural Engine v3.8 • Activos Remotos Optimizados
+            <i className="fa-solid fa-mobile-screen text-yellow-400 lg:hidden"></i>
+            Procedural Engine v3.9 • Optimizado para Móvil
           </p>
         </div>
 
@@ -126,7 +126,7 @@ const App: React.FC = () => {
             <div className="flex-1">
               <p className="text-[11px] font-bold text-red-800 uppercase tracking-tight">Incidencia con el Logo</p>
               <p className="text-[10px] text-red-600 leading-tight">
-                {brandingError} Se ha generado la imagen <b>sin logo</b> para no interrumpir el flujo.
+                {brandingError} Se ha generado la imagen <b>sin logo</b>.
               </p>
             </div>
             <button 
@@ -138,7 +138,7 @@ const App: React.FC = () => {
           </div>
         )}
 
-        <div className="flex-1 w-full flex flex-col items-center justify-center p-4 lg:p-8 overflow-hidden">
+        <div className="flex-1 w-full flex flex-col items-center justify-center p-4 lg:p-8 overflow-visible lg:overflow-hidden">
           <BackgroundPreview 
             imageUrl={currentImage} 
             isLoading={isLoading}

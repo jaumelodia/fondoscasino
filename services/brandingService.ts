@@ -1,13 +1,13 @@
 
 /**
- * Servicio de Branding Profesional V3.6
+ * Servicio de Branding Profesional V3.7
  * Sistema de alto rendimiento con pre-carga y caché de activos oficiales.
  * Utiliza versiones raw de GitHub para compatibilidad con Canvas.
  */
 
 const LOGO_URLS = {
-  white: 'https://raw.githubusercontent.com/jaumelodia/fondoscasino/faccc4f27e07ba7f272b6e37a3f9827f67adef27/logos/logo-blanco.png',
-  black: 'https://raw.githubusercontent.com/jaumelodia/fondoscasino/faccc4f27e07ba7f272b6e37a3f9827f67adef27/logos/logo-negro.png'
+  white: 'https://raw.githubusercontent.com/jaumelodia/fondoscasino/18759cd4e3007c4feeda04f763808f565ebde06a/logo-blanco.png',
+  black: 'https://raw.githubusercontent.com/jaumelodia/fondoscasino/18759cd4e3007c4feeda04f763808f565ebde06a/logo-negro.png'
 };
 
 // Caché interna para evitar descargar el logo más de una vez
@@ -101,6 +101,6 @@ export const applyBranding = async (
     ctx.drawImage(logoImg, padding, padding, logoTargetWidth, logoTargetHeight);
     return canvas.toDataURL('image/png', 1.0);
   } catch (err) {
-    throw new Error(`Error de Branding: No se pudo cargar el logo oficial (${finalLogoIsWhite ? 'Blanco' : 'Negro'}). Verifique la conexión a GitHub.`);
+    throw new Error(`Error de Branding: No se pudo cargar el logo oficial. Verifique la conexión.`);
   }
 };

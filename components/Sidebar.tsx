@@ -119,7 +119,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <span className="text-[8px] text-gray-400 font-bold uppercase block mb-2">Activos de Branding:</span>
             <div className="flex flex-col gap-1.5">
               <a 
-                href="https://raw.githubusercontent.com/jaumelodia/fondoscasino/faccc4f27e07ba7f272b6e37a3f9827f67adef27/logos/logo-blanco.png" 
+                href="https://github.com/jaumelodia/fondoscasino/blob/18759cd4e3007c4feeda04f763808f565ebde06a/logo-blanco.png" 
                 target="_blank" 
                 rel="noreferrer"
                 className="text-[9px] text-indigo-600 hover:text-indigo-800 flex items-center gap-2 font-medium"
@@ -127,7 +127,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <i className="fa-solid fa-cloud-arrow-down"></i> logo-blanco.png
               </a>
               <a 
-                href="https://raw.githubusercontent.com/jaumelodia/fondoscasino/faccc4f27e07ba7f272b6e37a3f9827f67adef27/logos/logo-negro.png" 
+                href="https://github.com/jaumelodia/fondoscasino/blob/18759cd4e3007c4feeda04f763808f565ebde06a/logo-negro.png" 
                 target="_blank" 
                 rel="noreferrer"
                 className="text-[9px] text-indigo-600 hover:text-indigo-800 flex items-center gap-2 font-medium"
