@@ -4,7 +4,7 @@ import Sidebar from './components/Sidebar.tsx';
 import BackgroundPreview from './components/BackgroundPreview.tsx';
 import { AspectRatio, LogoChoice, TextConfig, ShapeData } from './types.ts';
 import { drawBauhausPattern } from './services/proceduralService.ts';
-import { preloadLogos } from './services/brandingService.ts';
+import { applyBranding, preloadLogos } from './services/brandingService.ts';
 import { PALETTE } from './constants.ts';
 
 // Main Application Component
@@ -13,7 +13,6 @@ const App: React.FC = () => {
   const [widthPx, setWidthPx] = useState<number>(1920);
   const [heightPx, setHeightPx] = useState<number>(1080);
   const [density, setDensity] = useState<number>(50); 
-  // Fix: Corrected typo in state setter name from provided source
   const [dispersion, setDispersion] = useState<number>(50);
   const [centerExclusion, setCenterExclusion] = useState<number>(50);
   const [shapeSize, setShapeSize] = useState<number>(50);
@@ -65,7 +64,6 @@ const App: React.FC = () => {
         centerExclusion,
         shapeSize
       );
-      setCurrentImage(result.url);
       setBasePatternUrl(result.url);
       setCurrentShapes(result.shapes);
     } catch (error) {
@@ -74,6 +72,31 @@ const App: React.FC = () => {
       setIsLoading(false);
     }
   }, [widthPx, heightPx, selectedBgColor, density, dispersion, centerExclusion, shapeSize]);
+
+  // Sync the currentImage with the pattern + branding overlay
+  useEffect(() => {
+    const updateLogoOverlay = async () => {
+      if (!currentShapes.length) return;
+      try {
+        const finalUrl = await applyBranding(
+          widthPx,
+          heightPx,
+          selectedBgColor,
+          currentShapes,
+          logoChoice,
+          logoX,
+          logoY,
+          logoScale,
+          { ...textConfig, enabled: false } // Text is rendered by HTML overlay in preview
+        );
+        setCurrentImage(finalUrl);
+      } catch (err: any) {
+        console.error("Error applying branding to preview:", err);
+        if (basePatternUrl) setCurrentImage(basePatternUrl);
+      }
+    };
+    updateLogoOverlay();
+  }, [currentShapes, logoChoice, logoX, logoY, logoScale, selectedBgColor, widthPx, heightPx, basePatternUrl]);
 
   // Trigger initial pattern generation on mount
   useEffect(() => {
@@ -153,5 +176,4 @@ const App: React.FC = () => {
   );
 };
 
-// Fix: Added missing default export
 export default App;
