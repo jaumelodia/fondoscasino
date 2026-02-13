@@ -59,6 +59,11 @@ const Sidebar: React.FC<SidebarProps> = ({
   setLogoScale,
   density,
   setDensity,
+  // Fix: Destructured missing dispersion and shapeSize properties from interface
+  dispersion,
+  setDispersion,
+  shapeSize,
+  setShapeSize,
   centerExclusion,
   setCenterExclusion,
   textConfig,
@@ -220,6 +225,22 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <span className="text-[10px] font-bold text-gray-500">{density}%</span>
               </div>
               <input type="range" min="0" max="100" value={density} onChange={(e) => setDensity(parseInt(e.target.value))} className="w-full h-1.5 bg-gray-100 rounded-lg appearance-none accent-[#8E2464] cursor-pointer"/>
+            </div>
+            {/* Added: Dispersion slider to UI */}
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-[9px] font-bold text-gray-400 uppercase">Dispersión</span>
+                <span className="text-[10px] font-bold text-gray-500">{dispersion}%</span>
+              </div>
+              <input type="range" min="0" max="100" value={dispersion} onChange={(e) => setDispersion(parseInt(e.target.value))} className="w-full h-1.5 bg-gray-100 rounded-lg appearance-none accent-[#8E2464] cursor-pointer"/>
+            </div>
+            {/* Added: Shape Size slider to UI */}
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-[9px] font-bold text-gray-400 uppercase">Tamaño Formas</span>
+                <span className="text-[10px] font-bold text-gray-500">{shapeSize}%</span>
+              </div>
+              <input type="range" min="0" max="100" value={shapeSize} onChange={(e) => setShapeSize(parseInt(e.target.value))} className="w-full h-1.5 bg-gray-100 rounded-lg appearance-none accent-[#8E2464] cursor-pointer"/>
             </div>
             <div className="space-y-2">
               <div className="flex justify-between items-center">
