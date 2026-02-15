@@ -2,9 +2,9 @@
 import { TextConfig, LogoChoice, ShapeData } from "../types";
 
 /**
- * Servicio de Branding Profesional V9.0
+ * Servicio de Branding Profesional V9.1
  * - Motor de renderizado con soporte de escala (Multi-Resolution Rendering).
- * - Genera archivos de alta densidad de píxeles para impresión o pantallas retina.
+ * - Sistema de word-wrap para Canvas que sincroniza la disposición con la previsualización.
  */
 
 const LOGO_ICON_SVG_TEMPLATE = (fill: string) => `
@@ -16,6 +16,40 @@ const LOGO_ICON_SVG_TEMPLATE = (fill: string) => `
 `;
 
 const logoCache: Record<string, HTMLCanvasElement> = {};
+
+/**
+ * Helper to wrap text into lines for Canvas rendering
+ */
+function getWrappedLines(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
+    const lines: string[] = [];
+    // Respect explicit newlines first
+    const paragraphs = text.split('\n');
+    
+    for (const paragraph of paragraphs) {
+        if (!paragraph.trim()) {
+            lines.push("");
+            continue;
+        }
+        
+        const words = paragraph.split(' ');
+        let currentLine = '';
+        
+        for (let n = 0; n < words.length; n++) {
+            const testLine = currentLine + (currentLine ? ' ' : '') + words[n];
+            const metrics = ctx.measureText(testLine);
+            const testWidth = metrics.width;
+            
+            if (testWidth > maxWidth && n > 0) {
+                lines.push(currentLine);
+                currentLine = words[n];
+            } else {
+                currentLine = testLine;
+            }
+        }
+        lines.push(currentLine);
+    }
+    return lines;
+}
 
 export const getLogoCanvas = (color: 'white' | 'black', scale: number = 2): Promise<HTMLCanvasElement> => {
   const key = `${color}_${scale}`;
@@ -179,7 +213,7 @@ export const applyBranding = async (
     ctx.drawImage(logoCanvas, posX, posY, logoTargetWidth, logoTargetHeight);
   }
 
-  // 4. Capa de Texto (Escalado por renderScale)
+  // 4. Capa de Texto (Escalado por renderScale con sistema de word-wrap)
   if (textConfig && textConfig.enabled && textConfig.content.trim()) {
     const fontSizePx = (canvas.width * textConfig.fontSize) / 100;
     await document.fonts.load(`${fontSizePx}px Limelight`);
@@ -193,7 +227,14 @@ export const applyBranding = async (
     const tx = (canvas.width * textConfig.x) / 100;
     const ty = (canvas.height * textConfig.y) / 100;
     
-    const lines = textConfig.content.split('\n');
+    // Cálculo del ancho máximo para que no se salga de los bordes laterales
+    // Sincronizado con BackgroundPreview: Math.min(x, 100 - x) * 2
+    const maxWPercent = Math.min(textConfig.x, 100 - textConfig.x) * 2;
+    const maxWidthPx = (canvas.width * maxWPercent) / 100;
+
+    // Procesar texto para obtener líneas que ajusten al ancho
+    const lines = getWrappedLines(ctx, textConfig.content, maxWidthPx);
+    
     const lineHeight = fontSizePx * 1.1;
     const totalHeight = lines.length * lineHeight;
     const startY = ty - (totalHeight / 2) + (lineHeight / 2);
